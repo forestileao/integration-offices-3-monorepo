@@ -1,0 +1,1391 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "0c4e1542-ff0c-4015-96eb-af08f7141daa")
+	(paper "User" 431.8 508)
+	(title_block
+		(title "6 Channel Relays")
+	)
+	(lib_symbols)
+	(wire
+		(pts
+			(xy 224.79 102.87) (xy 224.79 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06fd8466-fe79-482f-a675-70a400f78e75")
+	)
+	(wire
+		(pts
+			(xy 186.69 176.53) (xy 190.5 176.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1093e7d1-f0fa-4b3b-a294-e042ee4540e3")
+	)
+	(wire
+		(pts
+			(xy 186.69 214.63) (xy 190.5 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "11908664-c3a0-40d5-b768-984dfedb94e2")
+	)
+	(wire
+		(pts
+			(xy 186.69 120.65) (xy 190.5 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "163bbfe0-6321-4014-8f81-a3db3b4ca51e")
+	)
+	(wire
+		(pts
+			(xy 186.69 167.64) (xy 190.5 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "18a7d197-a9f7-48dd-b3e9-9b16100c0fac")
+	)
+	(wire
+		(pts
+			(xy 246.38 176.53) (xy 250.19 176.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "19d548db-388e-4434-8d39-16374a961b63")
+	)
+	(wire
+		(pts
+			(xy 186.69 210.82) (xy 190.5 210.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2c71340a-a77d-4600-a611-582ae96126c7")
+	)
+	(wire
+		(pts
+			(xy 186.69 181.61) (xy 190.5 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "314477a1-3e56-4c03-b7dd-bb094588a726")
+	)
+	(wire
+		(pts
+			(xy 186.69 129.54) (xy 190.5 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "376bee1c-bb03-4b3e-b846-5e1f658982a3")
+	)
+	(wire
+		(pts
+			(xy 186.69 223.52) (xy 190.5 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3e32056d-8915-46c7-a0ab-f46c59ec12f1")
+	)
+	(wire
+		(pts
+			(xy 171.45 102.87) (xy 171.45 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f354dfb-b8c7-4ba8-9d8a-42fa6c4542c4")
+	)
+	(wire
+		(pts
+			(xy 231.14 149.86) (xy 231.14 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "519e8f91-92ac-4798-94fc-c0722f45f236")
+	)
+	(wire
+		(pts
+			(xy 171.45 149.86) (xy 171.45 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "53c05e64-1f11-4035-8f1d-b443d181de16")
+	)
+	(wire
+		(pts
+			(xy 226.06 149.86) (xy 226.06 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d2549cf-1a8f-4eb3-812f-ef346cf54482")
+	)
+	(wire
+		(pts
+			(xy 186.69 163.83) (xy 190.5 163.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "60819bb6-a660-4d91-8fb1-9954f5921e1d")
+	)
+	(wire
+		(pts
+			(xy 246.38 167.64) (xy 250.19 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64130fbd-50df-4f59-bcd4-b73ca6ab4912")
+	)
+	(wire
+		(pts
+			(xy 186.69 116.84) (xy 190.5 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6a4bfd6c-4210-4749-b92a-a6c6362da961")
+	)
+	(wire
+		(pts
+			(xy 166.37 149.86) (xy 166.37 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76d96b80-25c8-4767-a21b-1dfbac1c8634")
+	)
+	(wire
+		(pts
+			(xy 245.11 134.62) (xy 248.92 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88b2a8cb-2f82-404c-81ae-17b3c75a8a95")
+	)
+	(wire
+		(pts
+			(xy 246.38 226.06) (xy 250.19 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a998c996-e8e8-4fdf-8f3c-8b25e8356ebf")
+	)
+	(wire
+		(pts
+			(xy 245.11 129.54) (xy 248.92 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b282e00e-8eec-4931-ac2f-21326d3071e6")
+	)
+	(wire
+		(pts
+			(xy 245.11 120.65) (xy 248.92 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b46fc851-a3fa-440d-90b4-c11dbb2e8e48")
+	)
+	(wire
+		(pts
+			(xy 231.14 199.39) (xy 231.14 208.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bda85f89-dbff-4229-a34a-a46e9d5b357d")
+	)
+	(wire
+		(pts
+			(xy 186.69 228.6) (xy 190.5 228.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c1575fda-cf9a-4bdd-a615-3941139ce80e")
+	)
+	(wire
+		(pts
+			(xy 245.11 116.84) (xy 248.92 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c7e39a6a-9502-4703-aef3-12cf064fa70a")
+	)
+	(wire
+		(pts
+			(xy 186.69 134.62) (xy 190.5 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc48ab3c-ed91-457e-a7b2-bbfb917abc38")
+	)
+	(wire
+		(pts
+			(xy 229.87 102.87) (xy 229.87 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd536007-f77a-4592-9a48-ef2280befde5")
+	)
+	(wire
+		(pts
+			(xy 246.38 231.14) (xy 250.19 231.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d1a40f56-4b4f-4a84-bc40-ac8bfd25bb77")
+	)
+	(wire
+		(pts
+			(xy 226.06 199.39) (xy 226.06 208.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d402609d-6bd6-4b88-a34e-e78644c25b4d")
+	)
+	(wire
+		(pts
+			(xy 246.38 181.61) (xy 250.19 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d86b23fa-c8fb-4a3b-b15c-8b25876bb22d")
+	)
+	(wire
+		(pts
+			(xy 246.38 217.17) (xy 250.19 217.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dd6d6e97-a31d-4344-9fc8-19aba17b4026")
+	)
+	(wire
+		(pts
+			(xy 246.38 163.83) (xy 250.19 163.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "de4c617c-964f-43b2-8e20-87953932379e")
+	)
+	(wire
+		(pts
+			(xy 166.37 196.85) (xy 166.37 205.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dfa5354d-fada-46f1-bcfa-007545a6a04f")
+	)
+	(wire
+		(pts
+			(xy 246.38 213.36) (xy 250.19 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2ec36ad-9a45-4c20-aa10-7fd97146cc4b")
+	)
+	(wire
+		(pts
+			(xy 166.37 102.87) (xy 166.37 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e9a663f4-7a56-472b-b0b4-16bc9af89c24")
+	)
+	(wire
+		(pts
+			(xy 171.45 196.85) (xy 171.45 205.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1eecf6e-6f7a-4ba8-bf79-1fa8417691a2")
+	)
+	(hierarchical_label "NC5"
+		(shape output)
+		(at 226.06 149.86 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "07b138d0-f0e5-4d8d-972b-285b2d816ae4")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 190.5 116.84 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "093cbf50-d4a7-4123-ad0b-38a9fc8f6ac4")
+	)
+	(hierarchical_label "NC2"
+		(shape output)
+		(at 166.37 149.86 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "14020de6-a8fe-4c5d-b3ab-c89f219f04b6")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 190.5 163.83 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1db32627-29c8-4fb6-b61a-2b02a7ccf81c")
+	)
+	(hierarchical_label "NC4"
+		(shape output)
+		(at 226.06 199.39 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "241b72ae-95d8-4e85-9341-1fb514de2b1e")
+	)
+	(hierarchical_label "COM4"
+		(shape input)
+		(at 250.19 231.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3c140f80-4e6f-4cca-b9d8-588a1058cc9c")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 250.19 213.36 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3d42daeb-3e69-4d90-a0a8-ff27cc083938")
+	)
+	(hierarchical_label "IN1"
+		(shape input)
+		(at 190.5 129.54 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "42ad7c59-cdb3-4529-b309-f43b1d51222d")
+	)
+	(hierarchical_label "NO4"
+		(shape output)
+		(at 231.14 199.39 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4a254098-80b7-46e4-a492-e83735c81ca9")
+	)
+	(hierarchical_label "COM2"
+		(shape input)
+		(at 190.5 181.61 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4fbd9853-c40d-4a36-bbe5-29d15a0746c2")
+	)
+	(hierarchical_label "IN6"
+		(shape input)
+		(at 248.92 129.54 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "5119655d-7e28-4a0e-bad7-a207b6af040b")
+	)
+	(hierarchical_label "NO5"
+		(shape output)
+		(at 231.14 149.86 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "59bad927-94dc-4d4a-91e4-d7872ca582e9")
+	)
+	(hierarchical_label "NO2"
+		(shape output)
+		(at 171.45 149.86 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "60ea5bd8-ca96-4b40-8690-121a674e4ba4")
+	)
+	(hierarchical_label "COM3"
+		(shape input)
+		(at 190.5 228.6 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "6492216c-fc2d-4624-9dc5-2419dae529d2")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 248.92 120.65 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "64be55aa-596f-46e8-a1cf-ecde43b12a2b")
+	)
+	(hierarchical_label "IN2"
+		(shape input)
+		(at 190.5 176.53 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "65589053-515d-418d-a252-5b9341ae103a")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 190.5 214.63 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "678e457e-db76-48a0-a8e8-879aa39d52dd")
+	)
+	(hierarchical_label "COM6"
+		(shape input)
+		(at 248.92 134.62 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "775a82ed-a1d8-40d3-b7d2-864ca2f5d789")
+	)
+	(hierarchical_label "IN4"
+		(shape input)
+		(at 250.19 226.06 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "7acfc0fd-3f3e-4b59-8474-32b50caaff00")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 250.19 167.64 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "7f654aab-0135-42a0-aa8c-909c18db94bb")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 190.5 210.82 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "82b0fd1e-80fd-4c9f-abdd-161ab7b18db9")
+	)
+	(hierarchical_label "NC3"
+		(shape output)
+		(at 166.37 196.85 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "85731af5-792c-4994-9abe-474e88f70f8a")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 250.19 217.17 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "85fb697e-96b6-4ac0-bbe0-526136377788")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 250.19 163.83 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "89e73f3e-c903-4b75-83dc-fc79eccc229f")
+	)
+	(hierarchical_label "COM5"
+		(shape input)
+		(at 250.19 181.61 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8b0a5645-1a08-43c9-83ef-150f8962aa02")
+	)
+	(hierarchical_label "NO1"
+		(shape output)
+		(at 171.45 102.87 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9066a442-78d0-40bc-a29a-0972dd2f750d")
+	)
+	(hierarchical_label "COM1"
+		(shape input)
+		(at 190.5 134.62 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9bb21da5-968e-47bb-a03d-d30385d4d2fb")
+	)
+	(hierarchical_label "VCC RASP"
+		(shape input)
+		(at 248.92 116.84 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9d72718a-c646-4789-9e3c-23389ac4eef9")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 190.5 120.65 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a1156ef6-c989-47bb-baae-a8d6d6f98a25")
+	)
+	(hierarchical_label "IN5"
+		(shape input)
+		(at 250.19 176.53 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a8decd51-6275-4c5e-b6e7-4823212ac3bb")
+	)
+	(hierarchical_label "NC6"
+		(shape output)
+		(at 224.79 102.87 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "bcd4fc54-ca14-48e6-931f-01fc36c2d7df")
+	)
+	(hierarchical_label "NC1"
+		(shape output)
+		(at 166.37 102.87 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c0387b5b-ab7b-4231-bc04-3d0006b3eeb5")
+	)
+	(hierarchical_label "NO6"
+		(shape output)
+		(at 229.87 102.87 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d9a9aef5-fc83-45d3-acf0-99354e0446bc")
+	)
+	(hierarchical_label "IN3"
+		(shape input)
+		(at 190.5 223.52 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "dda69dc2-41f5-4e2a-9125-fbc7e94ba2a6")
+	)
+	(hierarchical_label "NO3"
+		(shape output)
+		(at 171.45 196.85 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "de19d851-5e6d-46bb-844c-3328a337cf8f")
+	)
+	(hierarchical_label "VCC REG"
+		(shape input)
+		(at 190.5 167.64 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f89b570c-558e-4308-831e-37ae2eae4f80")
+	)
+	(sheet
+		(at 160.02 158.75)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "402de1d3-daeb-4b81-bd23-d9088ebe014d")
+		(property "Sheetname" "Relaymod-unique1"
+			(at 160.02 158.0384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 160.02 188.5446 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 186.69 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "41877200-67f2-4ad2-a00a-6e98326a187f")
+		)
+		(pin "VCC REG" input
+			(at 186.69 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "bc08c9fc-f00f-4077-b6d0-743b3a7b6b5a")
+		)
+		(pin "IN" input
+			(at 186.69 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "3229c038-676b-4a17-b7e3-3512bcf44fde")
+		)
+		(pin "COM" input
+			(at 186.69 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "82d4d2b7-8563-4d8b-9e41-1d696e8ebc5f")
+		)
+		(pin "NO" output
+			(at 171.45 158.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "4222fe7a-1f46-4074-9180-1b74fe54498f")
+		)
+		(pin "NC" output
+			(at 166.37 158.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "e9a56ea7-83b2-4582-8347-140ee96afbd9")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 160.02 205.74)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "52a147e4-68a1-428d-bae9-09e37305af98")
+		(property "Sheetname" "Relaymod-unique4"
+			(at 160.02 205.0284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 160.02 235.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 186.69 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "54050dfd-8372-4e91-a4b0-7631c8e4dc84")
+		)
+		(pin "VCC REG" input
+			(at 186.69 214.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "e09544d0-a642-493f-a8e7-ca03477d2763")
+		)
+		(pin "IN" input
+			(at 186.69 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "1703b757-3290-4c72-877f-a559e7866ba1")
+		)
+		(pin "COM" input
+			(at 186.69 228.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "f1ff1465-c711-4568-bf4d-202e24583e1c")
+		)
+		(pin "NO" output
+			(at 171.45 205.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "9cf6d7d6-6a31-4c8d-817b-a481e85c6ffb")
+		)
+		(pin "NC" output
+			(at 166.37 205.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "aeebfa14-e72d-4d02-bf05-9fee9b61e225")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 160.02 111.76)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "595578a9-7e62-4230-b296-cda12796d988")
+		(property "Sheetname" "Relaymod-unique"
+			(at 160.02 111.0484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 160.02 141.5546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 186.69 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "7ffddff6-ed48-4340-b6cc-fc386e4bfa7a")
+		)
+		(pin "VCC REG" input
+			(at 186.69 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "83af8f43-18ba-44bc-978e-fcd897c123ec")
+		)
+		(pin "IN" input
+			(at 186.69 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "aee323d9-5a27-46e9-9143-f4f1e639ca1d")
+		)
+		(pin "COM" input
+			(at 186.69 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "0934364a-7ce2-4215-bfe1-c3b883d9d11d")
+		)
+		(pin "NO" output
+			(at 171.45 111.76 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "5718e385-cef6-4a78-9a69-4376fa13a98d")
+		)
+		(pin "NC" output
+			(at 166.37 111.76 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "a95c3f37-c643-437f-adf3-0a6318d50a4f")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 218.44 111.76)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "65df69e9-136e-4930-93aa-8acffde63785")
+		(property "Sheetname" "Relaymod-unique9"
+			(at 218.44 111.0484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 218.44 141.5546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 245.11 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "a9e9a680-2369-46ef-b673-2acdc67b1934")
+		)
+		(pin "VCC REG" input
+			(at 245.11 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "99d0b0c2-3b89-43e6-a529-b20aea6048d4")
+		)
+		(pin "IN" input
+			(at 245.11 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "f9041bea-da2a-478c-a875-808c24f341f9")
+		)
+		(pin "COM" input
+			(at 245.11 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "bcf3c08c-ebf4-42f7-bb16-10463a1e8a57")
+		)
+		(pin "NO" output
+			(at 229.87 111.76 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "7aac944e-c260-4071-b253-28531e928702")
+		)
+		(pin "NC" output
+			(at 224.79 111.76 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "587bbe08-fdbd-4139-bebf-1f538e8b366a")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "12")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 219.71 158.75)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "c28a24ec-bdbe-486d-9e22-3b049f37abbb")
+		(property "Sheetname" "Relaymod-unique8"
+			(at 219.71 158.0384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 219.71 188.5446 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 246.38 163.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "64af77d1-26d6-4a2d-85bd-74620baa7143")
+		)
+		(pin "VCC REG" input
+			(at 246.38 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "ee8b1483-7306-4172-a62d-1e2f6db3292f")
+		)
+		(pin "IN" input
+			(at 246.38 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "dd1994e8-606e-4f53-a08a-3da829a20dcb")
+		)
+		(pin "COM" input
+			(at 246.38 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "5c4b5a40-fbd1-486c-91bb-dc2a271a851b")
+		)
+		(pin "NO" output
+			(at 231.14 158.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "21de6277-f735-4def-8bed-b68f7d785bd2")
+		)
+		(pin "NC" output
+			(at 226.06 158.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "86a4bee7-7d5d-4417-a8e0-4f21777f8447")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "11")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 219.71 208.28)
+		(size 26.67 29.21)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "f5159d34-02b7-44e4-bc3a-3a071971aa5c")
+		(property "Sheetname" "Relaymod-unique5"
+			(at 219.71 207.5684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "relaymodunique.kicad_sch"
+			(at 219.71 238.0746 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "VCC RASP" input
+			(at 246.38 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "a609af42-3dca-442e-9708-4dab44ee6293")
+		)
+		(pin "VCC REG" input
+			(at 246.38 217.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "3ba309d0-4c4c-4d0f-871a-66aa6ff00816")
+		)
+		(pin "IN" input
+			(at 246.38 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "05ccc7e7-442d-41ac-903d-d04c8a5e8f0d")
+		)
+		(pin "COM" input
+			(at 246.38 231.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "fa626753-735f-483d-a28f-9eec2d8750d1")
+		)
+		(pin "NO" output
+			(at 231.14 208.28 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "f2586328-9e08-4b37-8d5c-0ae040867b82")
+		)
+		(pin "NC" output
+			(at 226.06 208.28 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "cb5be438-d861-421a-a12b-582b39920940")
+		)
+		(instances
+			(project "pcb"
+				(path "/3646f8bf-36fe-4bc7-a700-74e4affff735/4fb08cde-f78a-4f17-8264-32234f6129ae"
+					(page "8")
+				)
+			)
+		)
+	)
+)
