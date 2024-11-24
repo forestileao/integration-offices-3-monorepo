@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status, Body
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status, Body, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -82,14 +82,6 @@ def initialize_database():
 
 # OAuth2PasswordBearer will expect a token in the "Authorization" header
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# Dependency to get the current user from the token
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)
-    if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    return payload
-
 
 # Run the schema.sql at the start
 initialize_database()
@@ -187,7 +179,13 @@ def get_db():
     finally:
         db.close()
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(request: Request):
+
+    token = request.headers.get("Authorization")
+
+    if token is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    token = token.split(" ")[1]
     payload = verify_token(token)
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -195,27 +193,60 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # CRUD Operations
 @app.post("/projects/", response_model=dict)
-def create_project(name: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    project = Project(name=name)
+def create_project(body = Body(), db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    project = Project(name=body["name"])
     db.add(project)
     db.commit()
     db.refresh(project)
+
+
+
+    # assign admin role to the user in this project
+
+    role = db.query(Role).filter(Role.roleName == "admin").first()
+    user = db.query(User).filter(User.id == current_user["sub"]).first()
+    role_user = RoleUser(userId=user.id, roleId=role.id, projectId=project.id)
+
+    db.add(role_user)
+    db.commit()
     return {"id": project.id, "name": project.name}
 
 @app.get("/projects/", response_model=list)
 def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    projects = db.query(Project).all()
-    return [{"id": p.id, "name": p.name} for p in projects]
+    # Get the user's roles in the project (admin or viewer)
+    role_user_data = db.query(Project, RoleUser.roleId, Role.roleName) \
+        .join(RoleUser, RoleUser.projectId == Project.id) \
+        .join(Role, Role.id == RoleUser.roleId) \
+        .filter(RoleUser.userId == current_user["sub"]) \
+        .all()
+
+    projects = [
+        {
+            "id": project.id,
+            "name": project.name,
+            "role": role_name
+        }
+        for project, role_id, role_name in role_user_data
+    ]
+
+    return projects
+
 
 @app.post("/users/", response_model=dict)
 def create_user(username: str = Body(), password: str = Body(), db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == username).first():
         raise HTTPException(status_code=400, detail="Username already exists")
     user = User(username=username, password= hash_password(password))
+
     db.add(user)
     db.commit()
     db.refresh(user)
-    return {"id": user.id, "username": user.username}
+
+    # Create the JWT token with the user's ID
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user.id}, expires_delta=access_token_expires)
+
+    return {"id": user.id, "username": user.username, "access_token": access_token}
 
 @app.get("/users/", response_model=list)
 def list_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):

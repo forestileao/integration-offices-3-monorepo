@@ -44,9 +44,9 @@ export default function CreateAccountPage() {
       return;
     }
 
-    createUser(username, password);
-
-    router.push("/projects");
+    createUser(username, password).then(() => {
+      router.push("/projects");
+    });
   };
 
   return (

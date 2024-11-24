@@ -19,8 +19,10 @@ export const loginUser = async (username: string, password: string) => {
     // Extract the token from the response
     const { access_token } = response.data;
 
-    // Optionally, save the token in localStorage or sessionStorage
     localStorage.setItem("access_token", access_token);
+    AUTH_HEADER.headers = {
+      Authorization: `Bearer ${access_token}`, // Assuming the token is stored in localStorage
+    };
 
     return access_token; // You can return the token if needed
   } catch (error) {
@@ -74,6 +76,15 @@ export const createUser = async (username: string, password: string) => {
       { username, password },
       AUTH_HEADER
     );
+
+    // Extract the token from the response
+    const { access_token } = response.data;
+
+    localStorage.setItem("access_token", access_token);
+    AUTH_HEADER.headers = {
+      Authorization: `Bearer ${access_token}`,
+    };
+
     return response.data;
   } catch (error) {
     console.error("Error creating user", error);

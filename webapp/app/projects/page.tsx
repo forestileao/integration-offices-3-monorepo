@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,36 +35,26 @@ import {
 import { LogOut, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { createProject, listProjects } from "@/api";
 
 interface Project {
   id: string;
   name: string;
-  description: string;
+  role: string;
 }
 
 export default function ProjectSelectionPage() {
   const router = useRouter();
 
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "1",
-      name: "Radish Analysis",
-      description: "Radish analysis, main project for this year",
-    },
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [newProject, setNewProject] = useState({ name: "", description: "" });
   const { toast } = useToast();
 
-  // Mock admin status (in a real app, this would come from an authentication system)
-  const isAdmin = true;
-
   const handleAddProject = () => {
     if (newProject.name && newProject.description) {
-      setProjects([...projects, { ...newProject, id: Date.now().toString() }]);
-      setNewProject({ name: "", description: "" });
-      toast({
-        title: "Success",
-        description: "New project added successfully",
+      createProject(newProject.name).then((project) => {
+        setProjects([...projects, project]);
+        setNewProject({ name: "", description: "" });
       });
     }
   };
@@ -80,6 +70,12 @@ export default function ProjectSelectionPage() {
   const handleOpenProject = (_id: string) => {
     router.push(`/dashboard/`);
   };
+
+  useEffect(() => {
+    listProjects().then((data) => {
+      setProjects(data);
+    });
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -116,7 +112,6 @@ export default function ProjectSelectionPage() {
               <Card key={project.id}>
                 <CardHeader>
                   <CardTitle>{project.name}</CardTitle>
-                  <CardDescription>{project.description}</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
                   <Button
@@ -125,7 +120,7 @@ export default function ProjectSelectionPage() {
                   >
                     Open Project
                   </Button>
-                  {isAdmin && (
+                  {project.role == "admin" && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="icon">
