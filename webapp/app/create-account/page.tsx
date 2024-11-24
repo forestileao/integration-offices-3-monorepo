@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { createUser } from "@/api";
 
 export default function CreateAccountPage() {
   const [username, setUsername] = useState("");
@@ -43,17 +44,7 @@ export default function CreateAccountPage() {
       return;
     }
 
-    // Here you would typically make an API call to create the account
-    // For this example, we'll just show a success message
-    toast({
-      title: "Success",
-      description: "Account created successfully",
-    });
-
-    // Reset form fields
-    setUsername("");
-    setPassword("");
-    setConfirmPassword("");
+    createUser(username, password);
 
     router.push("/projects");
   };

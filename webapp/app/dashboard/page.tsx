@@ -62,6 +62,8 @@ export default function PlantMonitoringDashboard() {
             variant="ghost"
             size="icon"
             onClick={() => {
+              localStorage.clear();
+
               router.push("/");
             }}
           >

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,14 +13,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { AUTH_HEADER, loginUser } from "@/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const usernameRef = React.useRef<HTMLInputElement>(null);
+  const passwordRef = React.useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push("/projects");
+    const username = usernameRef.current?.value || "";
+    const password = passwordRef.current?.value || "";
+
+    loginUser(username, password).then(() => {
+      router.push("/projects");
+    });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    AUTH_HEADER.headers = {
+      Authorization: `Bearer ${token}`, // Assuming the token is stored in localStorage
+    };
+
+    if (token) {
+      router.push("/projects");
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted/40">
@@ -43,6 +62,7 @@ export default function LoginPage() {
                   type="text"
                   placeholder="Enter your username"
                   required
+                  ref={usernameRef}
                 />
               </div>
               <div className="space-y-2">
@@ -52,6 +72,7 @@ export default function LoginPage() {
                   type="password"
                   placeholder="Enter your password"
                   required
+                  ref={passwordRef}
                 />
               </div>
             </div>

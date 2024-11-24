@@ -93,6 +93,8 @@ export default function AddUserPage() {
             variant="ghost"
             size="icon"
             onClick={() => {
+              localStorage.clear();
+
               router.push("/");
             }}
           >

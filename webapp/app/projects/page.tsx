@@ -99,6 +99,8 @@ export default function ProjectSelectionPage() {
             variant="ghost"
             size="icon"
             onClick={() => {
+              localStorage.clear();
+
               router.push("/");
             }}
           >

@@ -8,9 +8,7 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    projectId TEXT,
-    FOREIGN KEY (projectId) REFERENCES projects (id)
+    password TEXT NOT NULL
 );
 
 -- Create Chambers table

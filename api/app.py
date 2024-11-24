@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -107,7 +109,6 @@ class User(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    projectId = Column(String, ForeignKey("projects.id"))
 
 class Chamber(Base):
     __tablename__ = "chambers"
@@ -169,6 +170,15 @@ Base.metadata.create_all(bind=engine)
 # FastAPI app
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # This allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # This allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # This allows all headers
+)
+
+
 # Dependency to get DB session
 def get_db():
     db = SessionLocal()
@@ -198,10 +208,10 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return [{"id": p.id, "name": p.name} for p in projects]
 
 @app.post("/users/", response_model=dict)
-def create_user(username: str, password: str, projectId: str, db: Session = Depends(get_db)):
+def create_user(username: str = Body(), password: str = Body(), db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == username).first():
         raise HTTPException(status_code=400, detail="Username already exists")
-    user = User(username=username, password=password, projectId=projectId)
+    user = User(username=username, password= hash_password(password))
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -358,11 +368,11 @@ def list_role_users(db: Session = Depends(get_db), current_user: dict = Depends(
 
 
 @app.post("/token", response_model=dict)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login_for_access_token(username = Body(), password = Body(), db: Session = Depends(get_db)):
     # Fetch the user from the database
-    user = db.query(User).filter(User.username == form_data.username).first()
+    user = db.query(User).filter(User.username == username).first()
 
-    if not user or not verify_password(form_data.password, user.password):
+    if not user or not verify_password(password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     # Create the JWT token with the user's ID
