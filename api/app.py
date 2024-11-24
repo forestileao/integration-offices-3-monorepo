@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -13,6 +13,50 @@ from datetime import datetime
 import os
 
 DATABASE_URL = "sqlite:///./test.db"
+# Secret key to encode and decode JWT
+SECRET_KEY = "dasuhjfsdaiufdasoduasioudasiudiasuioduasioduasio"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365 * 10
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from passlib.context import CryptContext
+
+# Secret key to encode and decode JWT
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# Create a passlib context for password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Helper function to hash a password
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+# Function to verify a password against a hashed one
+def verify_password(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
+
+# Function to create a JWT token
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + expires_delta
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Function to verify the token
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+
 
 # SQLAlchemy setup
 Base = declarative_base()
@@ -34,6 +78,15 @@ def initialize_database():
     else:
         print(f"Schema file '{schema_path}' not found.")
 
+# OAuth2PasswordBearer will expect a token in the "Authorization" header
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Dependency to get the current user from the token
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload
 
 
 # Run the schema.sql at the start
@@ -123,6 +176,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload
 
 # CRUD Operations
 @app.post("/projects/", response_model=dict)
