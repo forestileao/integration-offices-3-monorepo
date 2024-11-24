@@ -185,7 +185,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # CRUD Operations
 @app.post("/projects/", response_model=dict)
-def create_project(name: str, db: Session = Depends(get_db)):
+def create_project(name: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     project = Project(name=name)
     db.add(project)
     db.commit()
@@ -193,7 +193,7 @@ def create_project(name: str, db: Session = Depends(get_db)):
     return {"id": project.id, "name": project.name}
 
 @app.get("/projects/", response_model=list)
-def list_projects(db: Session = Depends(get_db)):
+def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     projects = db.query(Project).all()
     return [{"id": p.id, "name": p.name} for p in projects]
 
@@ -208,13 +208,13 @@ def create_user(username: str, password: str, projectId: str, db: Session = Depe
     return {"id": user.id, "username": user.username}
 
 @app.get("/users/", response_model=list)
-def list_users(db: Session = Depends(get_db)):
+def list_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     users = db.query(User).all()
     return [{"id": u.id, "username": u.username, "projectId": u.projectId} for u in users]
 
 # Example for Chambers
 @app.post("/chambers/", response_model=dict)
-def create_chamber(name: str, projectId: str, db: Session = Depends(get_db)):
+def create_chamber(name: str, projectId: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     chamber = Chamber(name=name, projectId=projectId)
     db.add(chamber)
     db.commit()
@@ -222,7 +222,7 @@ def create_chamber(name: str, projectId: str, db: Session = Depends(get_db)):
     return {"id": chamber.id, "name": chamber.name}
 
 @app.get("/chambers/", response_model=list)
-def list_chambers(db: Session = Depends(get_db)):
+def list_chambers(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     chambers = db.query(Chamber).all()
     return [{"id": c.id, "name": c.name, "projectId": c.projectId} for c in chambers]
 
@@ -230,7 +230,7 @@ def list_chambers(db: Session = Depends(get_db)):
 @app.post("/parameters/", response_model=dict)
 def create_parameter(chamberId: str, soilMoistureLowerLimit: float, lightingRoutine: str,
                      temperatureRange: str, ventilationSchedule: str, photoCaptureFrequency: str,
-                     db: Session = Depends(get_db)):
+                     db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     parameter = Parameter(
         chamberId=chamberId,
         soilMoistureLowerLimit=soilMoistureLowerLimit,
@@ -245,7 +245,7 @@ def create_parameter(chamberId: str, soilMoistureLowerLimit: float, lightingRout
     return {"id": parameter.id, "chamberId": parameter.chamberId}
 
 @app.get("/parameters/", response_model=list)
-def list_parameters(db: Session = Depends(get_db)):
+def list_parameters(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     parameters = db.query(Parameter).all()
     return [{
         "id": p.id,
@@ -258,7 +258,7 @@ def list_parameters(db: Session = Depends(get_db)):
     } for p in parameters]
 
 @app.post("/photos/", response_model=dict)
-def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = Depends(get_db)):
+def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     # Generate a unique filename for the uploaded image
     file_location = f"uploads/{generate_uuid()}_{photo.filename}"
 
@@ -276,14 +276,14 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
     return {"id": photo_entry.id, "chamberId": photo_entry.chamberId, "imageUrl": photo_entry.imageUrl}
 
 @app.get("/photos/", response_model=list)
-def list_photos(db: Session = Depends(get_db)):
+def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     photos = db.query(Photo).all()
     return [{"id": p.id, "chamberId": p.chamberId, "captureDate": p.captureDate, "imageUrl": p.imageUrl} for p in photos]
 
 # Create Estimates
 @app.post("/estimates/", response_model=dict)
 def create_estimate(chamberId: str, leafCount: int, greenArea: float, estimateDate: datetime = None,
-                    db: Session = Depends(get_db)):
+                    db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow())
     db.add(estimate)
     db.commit()
@@ -292,7 +292,7 @@ def create_estimate(chamberId: str, leafCount: int, greenArea: float, estimateDa
 
 # get estimates by optional chamberId
 @app.get("/estimates/", response_model=list)
-def list_estimates(chamberId = None, db: Session = Depends(get_db)):
+def list_estimates(chamberId = None, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if chamberId:
         estimates = db.query(Estimate).filter(Estimate.chamberId == chamberId).all()
         return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate} for e in estimates]
@@ -302,7 +302,7 @@ def list_estimates(chamberId = None, db: Session = Depends(get_db)):
 
 # Create Permissions
 @app.post("/permissions/", response_model=dict)
-def create_permission(label: str, db: Session = Depends(get_db)):
+def create_permission(label: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     permission = Permission(label=label)
     db.add(permission)
     db.commit()
@@ -310,13 +310,13 @@ def create_permission(label: str, db: Session = Depends(get_db)):
     return {"id": permission.id, "label": permission.label}
 
 @app.get("/permissions/", response_model=list)
-def list_permissions(db: Session = Depends(get_db)):
+def list_permissions(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     permissions = db.query(Permission).all()
     return [{"id": p.id, "label": p.label} for p in permissions]
 
 # Create Roles
 @app.post("/roles/", response_model=dict)
-def create_role(roleName: str, db: Session = Depends(get_db)):
+def create_role(roleName: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     role = Role(roleName=roleName)
     db.add(role)
     db.commit()
@@ -324,13 +324,13 @@ def create_role(roleName: str, db: Session = Depends(get_db)):
     return {"id": role.id, "roleName": role.roleName}
 
 @app.get("/roles/", response_model=list)
-def list_roles(db: Session = Depends(get_db)):
+def list_roles(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     roles = db.query(Role).all()
     return [{"id": r.id, "roleName": r.roleName} for r in roles]
 
 # Create User Permissions
 @app.post("/user_permissions/", response_model=dict)
-def create_user_permission(permissionId: str, roleId: str, db: Session = Depends(get_db)):
+def create_user_permission(permissionId: str, roleId: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_permission = UserPermission(permissionId=permissionId, roleId=roleId)
     db.add(user_permission)
     db.commit()
@@ -338,13 +338,13 @@ def create_user_permission(permissionId: str, roleId: str, db: Session = Depends
     return {"id": user_permission.id, "permissionId": user_permission.permissionId, "roleId": user_permission.roleId}
 
 @app.get("/user_permissions/", response_model=list)
-def list_user_permissions(db: Session = Depends(get_db)):
+def list_user_permissions(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     user_permissions = db.query(UserPermission).all()
     return [{"id": up.id, "permissionId": up.permissionId, "roleId": up.roleId} for up in user_permissions]
 
 # Create Role User
 @app.post("/role_user/", response_model=dict)
-def create_role_user(userId: str, roleId: str, projectId: str, db: Session = Depends(get_db)):
+def create_role_user(userId: str, roleId: str, projectId: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     role_user = RoleUser(userId=userId, roleId=roleId, projectId=projectId)
     db.add(role_user)
     db.commit()
@@ -352,7 +352,7 @@ def create_role_user(userId: str, roleId: str, projectId: str, db: Session = Dep
     return {"id": role_user.id, "userId": role_user.userId, "roleId": role_user.roleId, "projectId": role_user.projectId}
 
 @app.get("/role_user/", response_model=list)
-def list_role_users(db: Session = Depends(get_db)):
+def list_role_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     role_users = db.query(RoleUser).all()
     return [{"id": ru.id, "userId": ru.userId, "roleId": ru.roleId, "projectId": ru.projectId} for ru in role_users]
 
