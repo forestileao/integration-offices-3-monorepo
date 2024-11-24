@@ -1,5 +1,10 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
 from fastapi.responses import JSONResponse
+import shutil
 from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey, DateTime, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
@@ -103,6 +108,7 @@ class RoleUser(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     userId = Column(String, ForeignKey("users.id"))
     roleId = Column(String, ForeignKey("roles.id"))
+    projectId = Column(String, ForeignKey("projects.id"))
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -161,4 +167,142 @@ def list_chambers(db: Session = Depends(get_db)):
     chambers = db.query(Chamber).all()
     return [{"id": c.id, "name": c.name, "projectId": c.projectId} for c in chambers]
 
-# Additional routes for Parameters, Photos, Estimates, Roles, etc., can follow the same pattern.
+# Create Parameters
+@app.post("/parameters/", response_model=dict)
+def create_parameter(chamberId: str, soilMoistureLowerLimit: float, lightingRoutine: str,
+                     temperatureRange: str, ventilationSchedule: str, photoCaptureFrequency: str,
+                     db: Session = Depends(get_db)):
+    parameter = Parameter(
+        chamberId=chamberId,
+        soilMoistureLowerLimit=soilMoistureLowerLimit,
+        lightingRoutine=lightingRoutine,
+        temperatureRange=temperatureRange,
+        ventilationSchedule=ventilationSchedule,
+        photoCaptureFrequency=photoCaptureFrequency
+    )
+    db.add(parameter)
+    db.commit()
+    db.refresh(parameter)
+    return {"id": parameter.id, "chamberId": parameter.chamberId}
+
+@app.get("/parameters/", response_model=list)
+def list_parameters(db: Session = Depends(get_db)):
+    parameters = db.query(Parameter).all()
+    return [{
+        "id": p.id,
+        "chamberId": p.chamberId,
+        "soilMoistureLowerLimit": p.soilMoistureLowerLimit,
+        "lightingRoutine": p.lightingRoutine,
+        "temperatureRange": p.temperatureRange,
+        "ventilationSchedule": p.ventilationSchedule,
+        "photoCaptureFrequency": p.photoCaptureFrequency
+    } for p in parameters]
+
+@app.post("/photos/", response_model=dict)
+def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = Depends(get_db)):
+    # Generate a unique filename for the uploaded image
+    file_location = f"uploads/{generate_uuid()}_{photo.filename}"
+
+    # Save the file to the local filesystem
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(photo.file, buffer)
+
+    # Create a new Photo entry in the database
+    photo_entry = Photo(chamberId=chamberId, imageUrl=file_location)
+    db.add(photo_entry)
+    db.commit()
+    db.refresh(photo_entry)
+
+    # Return the photo details
+    return {"id": photo_entry.id, "chamberId": photo_entry.chamberId, "imageUrl": photo_entry.imageUrl}
+
+@app.get("/photos/", response_model=list)
+def list_photos(db: Session = Depends(get_db)):
+    photos = db.query(Photo).all()
+    return [{"id": p.id, "chamberId": p.chamberId, "captureDate": p.captureDate, "imageUrl": p.imageUrl} for p in photos]
+
+# Create Estimates
+@app.post("/estimates/", response_model=dict)
+def create_estimate(chamberId: str, leafCount: int, greenArea: float, estimateDate: datetime = None,
+                    db: Session = Depends(get_db)):
+    estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow())
+    db.add(estimate)
+    db.commit()
+    db.refresh(estimate)
+    return {"id": estimate.id, "chamberId": estimate.chamberId, "leafCount": estimate.leafCount, "greenArea": estimate.greenArea}
+
+@app.get("/estimates/", response_model=list)
+def list_estimates(db: Session = Depends(get_db)):
+    estimates = db.query(Estimate).all()
+    return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate} for e in estimates]
+
+# Create Permissions
+@app.post("/permissions/", response_model=dict)
+def create_permission(label: str, db: Session = Depends(get_db)):
+    permission = Permission(label=label)
+    db.add(permission)
+    db.commit()
+    db.refresh(permission)
+    return {"id": permission.id, "label": permission.label}
+
+@app.get("/permissions/", response_model=list)
+def list_permissions(db: Session = Depends(get_db)):
+    permissions = db.query(Permission).all()
+    return [{"id": p.id, "label": p.label} for p in permissions]
+
+# Create Roles
+@app.post("/roles/", response_model=dict)
+def create_role(roleName: str, db: Session = Depends(get_db)):
+    role = Role(roleName=roleName)
+    db.add(role)
+    db.commit()
+    db.refresh(role)
+    return {"id": role.id, "roleName": role.roleName}
+
+@app.get("/roles/", response_model=list)
+def list_roles(db: Session = Depends(get_db)):
+    roles = db.query(Role).all()
+    return [{"id": r.id, "roleName": r.roleName} for r in roles]
+
+# Create User Permissions
+@app.post("/user_permissions/", response_model=dict)
+def create_user_permission(permissionId: str, roleId: str, db: Session = Depends(get_db)):
+    user_permission = UserPermission(permissionId=permissionId, roleId=roleId)
+    db.add(user_permission)
+    db.commit()
+    db.refresh(user_permission)
+    return {"id": user_permission.id, "permissionId": user_permission.permissionId, "roleId": user_permission.roleId}
+
+@app.get("/user_permissions/", response_model=list)
+def list_user_permissions(db: Session = Depends(get_db)):
+    user_permissions = db.query(UserPermission).all()
+    return [{"id": up.id, "permissionId": up.permissionId, "roleId": up.roleId} for up in user_permissions]
+
+# Create Role User
+@app.post("/role_user/", response_model=dict)
+def create_role_user(userId: str, roleId: str, projectId: str, db: Session = Depends(get_db)):
+    role_user = RoleUser(userId=userId, roleId=roleId, projectId=projectId)
+    db.add(role_user)
+    db.commit()
+    db.refresh(role_user)
+    return {"id": role_user.id, "userId": role_user.userId, "roleId": role_user.roleId, "projectId": role_user.projectId}
+
+@app.get("/role_user/", response_model=list)
+def list_role_users(db: Session = Depends(get_db)):
+    role_users = db.query(RoleUser).all()
+    return [{"id": ru.id, "userId": ru.userId, "roleId": ru.roleId, "projectId": ru.projectId} for ru in role_users]
+
+
+@app.post("/token", response_model=dict)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # Fetch the user from the database
+    user = db.query(User).filter(User.username == form_data.username).first()
+
+    if not user or not verify_password(form_data.password, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    # Create the JWT token with the user's ID
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user.id}, expires_delta=access_token_expires)
+
+    return {"access_token": access_token, "token_type": "bearer"}

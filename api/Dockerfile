@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Ensure that the schema.sql file is present inside the container
-RUN if [ -f schema.sql ]; then echo "Schema file found."; else echo "Schema file not found."; fi
+RUN if [ -f database.sql ]; then echo "Schema file found."; else echo "Schema file not found."; fi
 
 # Expose the port that FastAPI will run on
 EXPOSE 8000

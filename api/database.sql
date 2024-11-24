@@ -78,6 +78,8 @@ CREATE TABLE IF NOT EXISTS role_user (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,
     roleId TEXT NOT NULL,
+    projectId TEXT NOT NULL,
     FOREIGN KEY (userId) REFERENCES users (id),
-    FOREIGN KEY (roleId) REFERENCES roles (id)
+    FOREIGN KEY (roleId) REFERENCES roles (id),
+    FOREIGN KEY (projectId) REFERENCES projects (id)
 );
