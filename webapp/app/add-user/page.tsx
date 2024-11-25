@@ -47,11 +47,6 @@ export default function AddUserPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  if (!AUTH_HEADER.headers.Authorization) {
-    router.push("/");
-    return null;
-  }
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -74,6 +69,11 @@ export default function AddUserPage() {
       setProjects(data.filter((project) => project.role === "admin"));
     });
   }, []);
+
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
