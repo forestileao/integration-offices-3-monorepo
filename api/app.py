@@ -385,8 +385,9 @@ def list_user_permissions(db: Session = Depends(get_db), current_user: dict = De
 
 # Create Role User
 @app.post("/role_user/", response_model=dict)
-def create_role_user(userId: str, roleId: str, projectId: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    role_user = RoleUser(userId=userId, roleId=roleId, projectId=projectId)
+def create_role_user(username: str = Body(), roleId: str = Body(), projectId: str = Body(), db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    user = db.query(User).filter(User.username == username).first()
+    role_user = RoleUser(userId=user.id, roleId=roleId, projectId=projectId)
     db.add(role_user)
     db.commit()
     db.refresh(role_user)
