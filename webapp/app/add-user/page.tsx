@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,24 +21,36 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Home, LogOut } from "lucide-react";
+import { AUTH_HEADER, listProjects, roleUser } from "@/api";
 
 interface Project {
   id: string;
   name: string;
+  role: string;
 }
 
 export default function AddUserPage() {
   const [username, setUsername] = useState("");
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState("");
+  const [role, setRole] = useState("");
+  const roles = [
+    {
+      id: "1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d",
+      roleName: "Admin",
+    },
+    {
+      id: "a5f17a1d-d6c7-4e4f-88d5-81b5591f850b",
+      roleName: "Viewer",
+    },
+  ];
   const { toast } = useToast();
   const router = useRouter();
 
-  // Mock projects data (in a real app, this would come from an API or database)
-  const projects: Project[] = [
-    { id: "1", name: "Tomato Growth Study" },
-    { id: "2", name: "Herb Garden Experiment" },
-    { id: "3", name: "Vertical Farming Project" },
-  ];
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -52,27 +64,16 @@ export default function AddUserPage() {
       return;
     }
 
-    // Here you would typically make an API call to add the user to the project
-    // For this example, we'll simulate an API call with a timeout
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      toast({
-        title: "Success",
-        description: `User ${username} added to project successfully`,
-        variant: "default",
-      });
-      setUsername("");
-      setSelectedProject("");
-
-      router.push("/projects");
-    } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add user to project. Please try again.",
-        variant: "destructive",
-      });
-    }
+    roleUser(username, role, selectedProject).then(() => {
+      router.back();
+    });
   };
+
+  useEffect(() => {
+    listProjects().then((data: Project[]) => {
+      setProjects(data.filter((project) => project.role === "admin"));
+    });
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -142,13 +143,16 @@ export default function AddUserPage() {
               </div>
               <div>
                 <Label htmlFor="role">Role</Label>
-                <Select>
+                <Select value={role} onValueChange={setRole}>
                   <SelectTrigger id="role">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="member">Viewer</SelectItem>
+                    {roles.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        {role.roleName}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

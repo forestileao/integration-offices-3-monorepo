@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/api";
+import { AUTH_HEADER, createUser } from "@/api";
 
 export default function CreateAccountPage() {
   const [username, setUsername] = useState("");
@@ -22,6 +22,11 @@ export default function CreateAccountPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
   const router = useRouter();
+
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

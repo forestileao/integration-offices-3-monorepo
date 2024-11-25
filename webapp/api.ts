@@ -129,6 +129,24 @@ export const listChambers = async () => {
   }
 };
 
+export const roleUser = async (
+  username: string,
+  roleId: string,
+  projectId: string
+) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/role_user/`,
+      { username, roleId, projectId },
+      AUTH_HEADER
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error role user", error);
+    throw error;
+  }
+};
+
 // Function to create new parameters
 export const createParameter = async (
   chamberId: string,

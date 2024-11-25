@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -34,7 +35,7 @@ import {
 import { LogOut, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { createProject, listProjects } from "@/api";
+import { AUTH_HEADER, createProject, listProjects } from "@/api";
 
 interface Project {
   id: string;
@@ -49,11 +50,14 @@ export default function ProjectSelectionPage() {
   const [newProject, setNewProject] = useState({ name: "", description: "" });
   const { toast } = useToast();
 
-  const handleAddProject = () => {
-    if (newProject.name && newProject.description) {
-      createProject(newProject.name).then((project) => {
-        setProjects([...projects, project]);
+  const handleAddProject = async () => {
+    if (newProject.name) {
+      await createProject(newProject.name).then(() => {
         setNewProject({ name: "", description: "" });
+      });
+
+      await listProjects().then((data) => {
+        setProjects(data);
       });
     }
   };
@@ -75,6 +79,11 @@ export default function ProjectSelectionPage() {
       setProjects(data);
     });
   }, []);
+
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -111,6 +120,9 @@ export default function ProjectSelectionPage() {
               <Card key={project.id}>
                 <CardHeader>
                   <CardTitle>{project.name}</CardTitle>
+                  <CardDescription>
+                    You are {project.role.toUpperCase()} of this Project
+                  </CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
                   <Button
@@ -174,22 +186,6 @@ export default function ProjectSelectionPage() {
                         setNewProject({ ...newProject, name: e.target.value })
                       }
                       placeholder="Enter project name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="project-description">
-                      Project Description
-                    </Label>
-                    <Input
-                      id="project-description"
-                      value={newProject.description}
-                      onChange={(e) =>
-                        setNewProject({
-                          ...newProject,
-                          description: e.target.value,
-                        })
-                      }
-                      placeholder="Enter project description"
                     />
                   </div>
                 </div>

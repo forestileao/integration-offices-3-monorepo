@@ -30,10 +30,65 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { AUTH_HEADER } from "@/api";
+import { Chart } from "react-google-charts";
 
 export default function PlantMonitoringDashboard() {
   const router = useRouter();
   const [selectedChamber, setSelectedChamber] = useState("1");
+
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
+
+  const greenAreaData = [
+    ["x", "Green Area"],
+    [0, 0],
+    [1, 10],
+    [2, 23],
+    [3, 17],
+    [4, 18],
+    [5, 9],
+    [6, 11],
+    [7, 27],
+    [8, 33],
+    [9, 40],
+    [10, 32],
+    [11, 35],
+  ];
+
+  const visibleLeavesData = [
+    ["x", "Visible Leaves"],
+    [0, 0],
+    [1, 1],
+    [2, 2],
+    [3, 3],
+    [4, 3],
+    [5, 3],
+    [6, 4],
+    [7, 4],
+    [8, 5],
+    [9, 5],
+    [10, 6],
+    [11, 7],
+  ];
+
+  const greenAreaOptions = {
+    title: "Green Area Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Green Area (cm²)" },
+    legend: "none",
+    colors: ["#2ECC71"],
+  };
+
+  const visibleLeavesOptions = {
+    title: "Visible Leaves Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Visible Leaves" },
+    legend: "none",
+    colors: ["#ff0000"],
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -174,11 +229,20 @@ export default function PlantMonitoringDashboard() {
                   <CardTitle>Growth Metrics Over Time</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[200px] w-full bg-muted/50 rounded-md flex items-center justify-center text-muted-foreground">
-                    Chart placeholder: Line graph showing temperature, humidity,
-                    soil moisture, leaves, and green area over time for Chamber{" "}
-                    {selectedChamber}
-                  </div>
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={greenAreaData}
+                    options={greenAreaOptions}
+                  />
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={visibleLeavesData}
+                    options={visibleLeavesOptions}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
