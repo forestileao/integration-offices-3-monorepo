@@ -4,4 +4,4 @@ sqlalchemy==2.0.0
 python-multipart
 python-jose
 passlib
-pydantic
+pydantic==4.9.0
