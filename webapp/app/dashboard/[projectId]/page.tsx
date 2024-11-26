@@ -172,7 +172,7 @@ export default function PlantMonitoringDashboard() {
                   <SelectValue placeholder="Select a chamber" />
                 </SelectTrigger>
                 <SelectContent>
-                  {project?.chambers?.map((chamber: any) => (
+                  {project?.chambers?.map((chamber: Chamber) => (
                     <SelectItem key={chamber.id} value={chamber.id}>
                       {chamber.name}
                     </SelectItem>
