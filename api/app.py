@@ -84,7 +84,7 @@ def initialize_database():
             with open(schema_path, "r") as schema_file:
                 sql_script = schema_file.read()
             cursor = connection.cursor()
-            cursor.executescript(sql_script)  # Execute SQL script
+            cursor.execute(sql_script)
             connection.commit()
         finally:
             connection.close()  # Ensure the connection is closed
