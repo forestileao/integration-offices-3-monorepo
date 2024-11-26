@@ -11,11 +11,23 @@ from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
 import uuid
+from pydantic import PostgresDsn
 from datetime import datetime
 import os
 
-DATABASE_URL = "sqlite:///./test.db"
-# Secret key to encode and decode JWT
+SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
+    scheme="postgresql",
+    user=os.environ.get("POSTGRES_USER"),
+    password=os.environ.get("POSTGRES_PASSWORD"),
+    host=os.environ.get("POSTGRES_HOST"),
+    path=os.environ.get("POSTGRES_DB"),
+)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URI,
+    pool_pre_ping=True,
+)
+
+
 SECRET_KEY = "dasuhjfsdaiufdasoduasioudasiudiasuioduasioduasio"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365 * 10
@@ -62,7 +74,6 @@ def verify_token(token: str):
 
 # SQLAlchemy setup
 Base = declarative_base()
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def initialize_database():
