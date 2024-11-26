@@ -17,7 +17,7 @@ import os
 
 SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
     scheme="postgresql",
-    username=os.environ.get("POSTGRES_USER"),
+    user=os.environ.get("POSTGRES_USER"),
     password=os.environ.get("POSTGRES_PASSWORD"),
     host=os.environ.get("POSTGRES_HOST"),
     path=os.environ.get("POSTGRES_DB"),
