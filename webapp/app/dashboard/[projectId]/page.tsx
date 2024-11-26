@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Home,
   LogOut,
@@ -29,13 +29,19 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { AUTH_HEADER } from "@/api";
+import { useParams, useRouter } from "next/navigation";
+import { AUTH_HEADER, getProject } from "@/api";
 import { Chart } from "react-google-charts";
 
 export default function PlantMonitoringDashboard() {
   const router = useRouter();
   const [selectedChamber, setSelectedChamber] = useState("1");
+  const [project, setProject] = useState<any>({});
+  const { projectId } = useParams();
+
+  const currentChamber = project.chambers?.find(
+    (chamber: any) => chamber.id === selectedChamber
+  );
 
   if (!AUTH_HEADER.headers.Authorization) {
     router.push("/");
@@ -90,10 +96,20 @@ export default function PlantMonitoringDashboard() {
     colors: ["#ff0000"],
   };
 
+  useEffect(() => {
+    getProject((projectId as string) || "").then((data) => {
+      console.log(data);
+      setProject(data);
+      setSelectedChamber(data.chambers[0].id);
+    });
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="flex items-center justify-between p-4 bg-primary text-primary-foreground">
-        <h1 className="text-2xl font-bold">Plant Monitoring Dashboard</h1>
+        <h1 className="text-2xl font-bold">
+          Plant Monitoring Dashboard{project.id && ` - ${project.name}`}
+        </h1>
         <nav className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -145,8 +161,11 @@ export default function PlantMonitoringDashboard() {
                   <SelectValue placeholder="Select a chamber" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Chamber 1</SelectItem>
-                  <SelectItem value="2">Chamber 2</SelectItem>
+                  {project?.chambers?.map((chamber: any) => (
+                    <SelectItem key={chamber.id} value={chamber.id}>
+                      {chamber.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </CardContent>
@@ -251,7 +270,7 @@ export default function PlantMonitoringDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    Environmental Controls for Chamber {selectedChamber}
+                    Environmental Controls for {currentChamber?.name}
                   </CardTitle>
                   <CardDescription>
                     Adjust parameters for optimal growth
@@ -309,16 +328,12 @@ export default function PlantMonitoringDashboard() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="soil-moisture">Soil Moisture (%)</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select soil moisture range" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="50-60">50-60%</SelectItem>
-                        <SelectItem value="60-70">60-70%</SelectItem>
-                        <SelectItem value="70-80">70-80%</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="soil-moisture"
+                      type="number"
+                      placeholder="Enter soil moisture level"
+                      defaultValue={57}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -328,7 +343,7 @@ export default function PlantMonitoringDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    Photo Gallery for Chamber {selectedChamber}
+                    Photo Gallery for {currentChamber?.name}
                   </CardTitle>
                   <CardDescription>
                     Visual record of plant growth

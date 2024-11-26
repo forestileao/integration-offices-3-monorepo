@@ -1,7 +1,8 @@
   -- Create Projects table
 CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    deleted int DEFAULT 0
 );
 
 -- Create Users table

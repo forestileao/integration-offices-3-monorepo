@@ -35,7 +35,7 @@ import {
 import { LogOut, PlusCircle, Trash2, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { AUTH_HEADER, createProject, listProjects } from "@/api";
+import { AUTH_HEADER, createProject, deleteProject, listProjects } from "@/api";
 
 interface Project {
   id: string;
@@ -47,14 +47,16 @@ export default function ProjectSelectionPage() {
   const router = useRouter();
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [newProject, setNewProject] = useState({ name: "", description: "" });
+  const [newProject, setNewProject] = useState({ name: "", chambersCount: 1 });
   const { toast } = useToast();
 
   const handleAddProject = async () => {
     if (newProject.name) {
-      await createProject(newProject.name).then(() => {
-        setNewProject({ name: "", description: "" });
-      });
+      await createProject(newProject.name, newProject.chambersCount).then(
+        () => {
+          setNewProject({ name: "", chambersCount: 1 });
+        }
+      );
 
       await listProjects().then((data) => {
         setProjects(data);
@@ -63,15 +65,13 @@ export default function ProjectSelectionPage() {
   };
 
   const handleDeleteProject = (id: string) => {
-    setProjects(projects.filter((project) => project.id !== id));
-    toast({
-      title: "Success",
-      description: "Project deleted successfully",
+    deleteProject(id).then(() => {
+      setProjects(projects.filter((project) => project.id !== id));
     });
   };
 
-  const handleOpenProject = (_id: string) => {
-    router.push(`/dashboard/`);
+  const handleOpenProject = (id: string) => {
+    router.push(`/dashboard/${id}`);
   };
 
   useEffect(() => {
@@ -188,9 +188,32 @@ export default function ProjectSelectionPage() {
                       placeholder="Enter project name"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="project-name">Number of Chambers</Label>
+                    <Input
+                      id="project-name"
+                      value={newProject.chambersCount}
+                      min={1}
+                      type="number"
+                      onChange={(e) =>
+                        setNewProject({
+                          ...newProject,
+                          chambersCount: Number(e.target.value || 0),
+                        })
+                      }
+                      placeholder="How much chambers do your greenhouse has?"
+                    />
+                  </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleAddProject}>Add Project</Button>
+                  <Button
+                    disabled={
+                      newProject.chambersCount <= 0 || newProject.name == ""
+                    }
+                    onClick={handleAddProject}
+                  >
+                    Add Project
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

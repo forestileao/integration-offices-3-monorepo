@@ -95,6 +95,7 @@ class Project(Base):
     __tablename__ = "projects"
     id = Column(String, primary_key=True, default=generate_uuid)
     name = Column(String, nullable=False)
+    deleted = Column(Integer, default=0)
 
 class User(Base):
     __tablename__ = "users"
@@ -199,7 +200,27 @@ def create_project(body = Body(), db: Session = Depends(get_db), current_user: d
     db.commit()
     db.refresh(project)
 
+    # create chambers for the project, with default parameters
 
+    chambersCount = body["chambersCount"]
+
+    for i in range(chambersCount):
+        chamber = Chamber(name=f"Chamber {i+1}", projectId=project.id)
+        db.add(chamber)
+        db.commit()
+        db.refresh(chamber)
+
+        parameter = Parameter(
+            chamberId=chamber.id,
+            soilMoistureLowerLimit=60,
+            lightingRoutine='07:40/18:20',
+            temperatureRange='20-25',
+            ventilationSchedule='10:00/11:00',
+            photoCaptureFrequency='1'
+        )
+        db.add(parameter)
+        db.commit()
+        db.refresh(parameter)
 
     # assign admin role to the user in this project
 
@@ -218,6 +239,7 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
         .join(RoleUser, RoleUser.projectId == Project.id) \
         .join(Role, Role.id == RoleUser.roleId) \
         .filter(RoleUser.userId == current_user["sub"]) \
+        .filter(Project.deleted == 0) \
         .all()
 
     projects = [
@@ -230,6 +252,36 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     ]
 
     return projects
+
+@app.get("/projects/{project_id}/", response_model=dict)
+def get_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # get parameters, chambers, estimates for the project
+    chambers = db.query(Chamber).filter(Chamber.projectId == project_id).all()
+    parameters = db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers])).all()
+    estimates = db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers])).all()
+
+    return {
+        "id": project.id,
+        "name": project.name,
+        "chambers": chambers,
+        "parameters": parameters,
+        "estimates": estimates
+        }
+
+@app.delete("/projects/{project_id}/", response_model=dict)
+def delete_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    project.deleted = 1
+    db.commit()
+    return {"message": "Project deleted"}
+
 
 
 @app.post("/users/", response_model=dict)

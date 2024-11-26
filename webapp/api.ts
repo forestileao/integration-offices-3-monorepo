@@ -43,11 +43,11 @@ export const getCurrentUser = async () => {
 };
 
 // Function to create a new project
-export const createProject = async (name: string) => {
+export const createProject = async (name: string, chambersCount: number) => {
   try {
     const response = await axios.post(
       `${API_URL}/projects/`,
-      { name },
+      { name, chambersCount },
       AUTH_HEADER
     );
     return response.data;
@@ -125,6 +125,32 @@ export const listChambers = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching chambers", error);
+    throw error;
+  }
+};
+
+export const getProject = async (projectId: string) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/projects/${projectId}`,
+      AUTH_HEADER
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching project", error);
+    throw error;
+  }
+};
+
+export const deleteProject = async (projectId: string) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/projects/${projectId}`,
+      AUTH_HEADER
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting project", error);
     throw error;
   }
 };
