@@ -33,20 +33,26 @@ import { useParams, useRouter } from "next/navigation";
 import { AUTH_HEADER, getProject } from "@/api";
 import { Chart } from "react-google-charts";
 
+interface Chamber {
+  id: string;
+  name: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  chambers: Chamber[];
+}
+
 export default function PlantMonitoringDashboard() {
   const router = useRouter();
   const [selectedChamber, setSelectedChamber] = useState("1");
-  const [project, setProject] = useState<any>({});
+  const [project, setProject] = useState<Project>({} as Project);
   const { projectId } = useParams();
 
   const currentChamber = project.chambers?.find(
-    (chamber: any) => chamber.id === selectedChamber
+    (chamber: Chamber) => chamber.id === selectedChamber
   );
-
-  if (!AUTH_HEADER.headers.Authorization) {
-    router.push("/");
-    return null;
-  }
 
   const greenAreaData = [
     ["x", "Green Area"],
@@ -103,6 +109,11 @@ export default function PlantMonitoringDashboard() {
       setSelectedChamber(data.chambers[0].id);
     });
   }, []);
+
+  if (!AUTH_HEADER.headers.Authorization) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
