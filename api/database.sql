@@ -16,39 +16,39 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS chambers (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    projectId TEXT,
-    FOREIGN KEY (projectId) REFERENCES projects (id)
+    "projectId" TEXT,
+    FOREIGN KEY ("projectId") REFERENCES projects (id)
 );
 
 -- Create Parameters table
 CREATE TABLE IF NOT EXISTS parameters (
     id TEXT PRIMARY KEY,
-    chamberId TEXT NOT NULL,
-    soilMoistureLowerLimit REAL NOT NULL,
-    lightingRoutine TEXT NOT NULL,
-    temperatureRange TEXT NOT NULL,
-    ventilationSchedule TEXT NOT NULL,
-    photoCaptureFrequency TEXT NOT NULL,
-    FOREIGN KEY (chamberId) REFERENCES chambers (id)
+    "chamberId" TEXT NOT NULL,
+    "soilMoistureLowerLimit" REAL NOT NULL,
+    "lightingRoutine" TEXT NOT NULL,
+    "temperatureRange" TEXT NOT NULL,
+    "ventilationSchedule" TEXT NOT NULL,
+    "photoCaptureFrequency" TEXT NOT NULL,
+    FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
 
 -- Create Photos table
 CREATE TABLE IF NOT EXISTS photos (
     id TEXT PRIMARY KEY,
-    chamberId TEXT NOT NULL,
-    captureDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    imageUrl TEXT NOT NULL,
-    FOREIGN KEY (chamberId) REFERENCES chambers (id)
+    "chamberId" TEXT NOT NULL,
+    "captureDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "imageUrl" TEXT NOT NULL,
+    FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
 
 -- Create Estimates table
 CREATE TABLE IF NOT EXISTS estimates (
     id TEXT PRIMARY KEY,
-    chamberId TEXT NOT NULL,
-    leafCount INTEGER NOT NULL,
-    greenArea REAL NOT NULL,
-    estimateDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chamberId) REFERENCES chambers (id)
+    "chamberId" TEXT NOT NULL,
+    "leafCount" INTEGER NOT NULL,
+    "greenArea" REAL NOT NULL,
+    "estimateDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
 
 -- Create Permissions table
@@ -60,39 +60,39 @@ CREATE TABLE IF NOT EXISTS permissions (
 -- Create Roles table
 CREATE TABLE IF NOT EXISTS roles (
     id TEXT PRIMARY KEY,
-    roleName TEXT NOT NULL
+    "roleName" TEXT NOT NULL
 );
 
 -- Create User Permissions table
 CREATE TABLE IF NOT EXISTS user_permissions (
     id TEXT PRIMARY KEY,
-    permissionId TEXT NOT NULL,
-    roleId TEXT NOT NULL,
-    FOREIGN KEY (permissionId) REFERENCES permissions (id),
-    FOREIGN KEY (roleId) REFERENCES roles (id)
+    "permissionId" TEXT NOT NULL,
+    "roleId" TEXT NOT NULL,
+    FOREIGN KEY ("permissionId") REFERENCES permissions (id),
+    FOREIGN KEY ("roleId") REFERENCES roles (id)
 );
 
 -- Create Role User table
 CREATE TABLE IF NOT EXISTS role_user (
     id TEXT PRIMARY KEY,
-    userId TEXT NOT NULL,
-    roleId TEXT NOT NULL,
-    projectId TEXT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users (id),
-    FOREIGN KEY (roleId) REFERENCES roles (id),
-    FOREIGN KEY (projectId) REFERENCES projects (id)
+    "userId" TEXT NOT NULL,
+    "roleId" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    FOREIGN KEY ("userId") REFERENCES users (id),
+    FOREIGN KEY ("roleId") REFERENCES roles (id),
+    FOREIGN KEY ("projectId") REFERENCES projects (id)
 );
 
 
 -- Insert 'viewer' role if it doesn't exist
-INSERT INTO roles (id, roleName)
+INSERT INTO roles (id, "roleName")
 SELECT 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b', 'viewer'
-WHERE NOT EXISTS (SELECT 1 FROM roles WHERE roleName = 'viewer');
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE "roleName" = 'viewer');
 
 -- Insert 'admin' role if it doesn't exist
-INSERT INTO roles (id, roleName)
+INSERT INTO roles (id, "roleName")
 SELECT '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d', 'admin'
-WHERE NOT EXISTS (SELECT 1 FROM roles WHERE roleName = 'admin');
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE "roleName" = 'admin');
 
 
 
@@ -139,14 +139,14 @@ WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE label = 'manage_estimates');
 
 
 -- Assign permissions to the viewer role (viewer role UUID: 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b')
-INSERT INTO user_permissions (id, permissionId, roleId)
+INSERT INTO user_permissions (id, "permissionId", "roleId")
 SELECT 'e9f6dbdb-393a-4a96-a801-5cdd6b6eaf0a', '6fe9c6d2-cfe1-44b3-9b2a-b4c9b7223c1d', 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b'
-WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE roleId = 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b' AND permissionId = '6fe9c6d2-cfe1-44b3-9b2a-b4c9b7223c1d');
+WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE "roleId" = 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b' AND "permissionId" = '6fe9c6d2-cfe1-44b3-9b2a-b4c9b7223c1d');
 
-INSERT INTO user_permissions (id, permissionId, roleId)
+INSERT INTO user_permissions (id, "permissionId", "roleId")
 SELECT 'fa56c5b5-61a4-4b12-84d4-8b907de8e2d1', '7a4f2101-1eb5-4877-b967-d2f7b520bdc1', 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b'
-WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE roleId = 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b' AND permissionId = '7a4f2101-1eb5-4877-b967-d2f7b520bdc1');
+WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE "roleId" = 'a5f17a1d-d6c7-4e4f-88d5-81b5591f850b' AND "permissionId" = '7a4f2101-1eb5-4877-b967-d2f7b520bdc1');
 
-INSERT INTO user_permissions (id, permissionId, roleId)
+INSERT INTO user_permissions (id, "permissionId", "roleId")
 SELECT 'b94db756-4e92-4625-b877-1e263e4b52c0', '5705f902-3f27-41c9-b1fc-d12a70fa1c9e', '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d'
-WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE roleId = '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d' AND permissionId = '5705f902-3f27-41c9-b1fc-d12a70fa1c9e');
+WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE "roleId" = '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d' AND "permissionId" = '5705f902-3f27-41c9-b1fc-d12a70fa1c9e');
