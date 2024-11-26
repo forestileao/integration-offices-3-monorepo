@@ -33,7 +33,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { LogOut, PlusCircle, Trash2, UserPlus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AUTH_HEADER, createProject, deleteProject, listProjects } from "@/api";
 
@@ -48,7 +47,6 @@ export default function ProjectSelectionPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProject, setNewProject] = useState({ name: "", chambersCount: 1 });
-  const { toast } = useToast();
 
   const handleAddProject = async () => {
     if (newProject.name) {
