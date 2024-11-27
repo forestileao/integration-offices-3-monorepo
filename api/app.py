@@ -17,10 +17,10 @@ import os
 
 SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
     scheme="postgresql",
-    user=os.environ.get("POSTGRES_USER"),
-    password=os.environ.get("POSTGRES_PASSWORD"),
-    host=os.environ.get("POSTGRES_HOST"),
-    path=os.environ.get("POSTGRES_DB"),
+    user=os.environ.get("POSTGRES_USER") or 'your_username',
+    password=os.environ.get("POSTGRES_PASSWORD") or 'your_password',
+    host=os.environ.get("POSTGRES_HOST") or 'localhost',
+    path=os.environ.get("POSTGRES_DB") or '/your_database',
 )
 engine = create_engine(
     SQLALCHEMY_DATABASE_URI,
@@ -28,7 +28,7 @@ engine = create_engine(
 )
 
 
-SECRET_KEY = "dasuhjfsdaiufdasoduasioudasiudiasuioduasioduasio"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "dasuhjfsdaiufdasoduasioudasiudiasuioduasioduasio"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365 * 10
 
@@ -144,6 +144,9 @@ class Estimate(Base):
     leafCount = Column(Integer, nullable=False)
     greenArea = Column(Float, nullable=False)
     estimateDate = Column(DateTime, default=datetime.utcnow)
+    soilMoisture = Column(Float, nullable=False)
+    temperature = Column(Float, nullable=False)
+    humidity = Column(Float, nullable=False)
 
 class Permission(Base):
     __tablename__ = "permissions"
@@ -387,8 +390,10 @@ def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_
 # Create Estimates
 @app.post("/estimates/", response_model=dict)
 def create_estimate(chamberId: str, leafCount: int, greenArea: float, estimateDate: datetime = None,
+                    soilMoisture: float = 0, temperature: float = 0, humidity: float = 0,
                     db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow())
+    estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow(),
+                        soilMoisture=soilMoisture, temperature=temperature, humidity=humidity)
     db.add(estimate)
     db.commit()
     db.refresh(estimate)

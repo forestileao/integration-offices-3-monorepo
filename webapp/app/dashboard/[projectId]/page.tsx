@@ -38,10 +38,22 @@ interface Chamber {
   name: string;
 }
 
+interface Estimate {
+  id: string;
+  chamberId: string;
+  leafCount: number;
+  greenArea: number;
+  estimateDate: string;
+  soilMoisture: number;
+  temperature: number;
+  humidity: number;
+}
+
 interface Project {
   id: string;
   name: string;
   chambers: Chamber[];
+  estimates: Estimate[];
 }
 
 export default function PlantMonitoringDashboard() {
@@ -54,36 +66,36 @@ export default function PlantMonitoringDashboard() {
     (chamber: Chamber) => chamber.id === selectedChamber
   );
 
+  const estimates =
+    project.estimates
+      ?.filter((estimate: Estimate) => estimate.chamberId === selectedChamber)
+      .sort((a, b) => {
+        return (
+          new Date(b.estimateDate).getTime() -
+          new Date(a.estimateDate).getTime()
+        );
+      }) || [];
+
+  const mainEstimate = estimates[0];
+
   const greenAreaData = [
     ["x", "Green Area"],
-    [0, 0],
-    [1, 10],
-    [2, 23],
-    [3, 17],
-    [4, 18],
-    [5, 9],
-    [6, 11],
-    [7, 27],
-    [8, 33],
-    [9, 40],
-    [10, 32],
-    [11, 35],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleTimeString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleTimeString(),
+          estimate.greenArea,
+        ])),
   ];
 
   const visibleLeavesData = [
     ["x", "Visible Leaves"],
-    [0, 0],
-    [1, 1],
-    [2, 2],
-    [3, 3],
-    [4, 3],
-    [5, 3],
-    [6, 4],
-    [7, 4],
-    [8, 5],
-    [9, 5],
-    [10, 6],
-    [11, 7],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleTimeString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleTimeString(),
+          estimate.leafCount,
+        ])),
   ];
 
   const greenAreaOptions = {
@@ -199,7 +211,9 @@ export default function PlantMonitoringDashboard() {
                     <Thermometer className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">23°C</div>
+                    <div className="text-2xl font-bold">
+                      {mainEstimate?.temperature || "- "}°C
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -210,7 +224,9 @@ export default function PlantMonitoringDashboard() {
                     <Droplets className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">63%</div>
+                    <div className="text-2xl font-bold">
+                      {mainEstimate?.humidity || "- "}%
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -221,7 +237,9 @@ export default function PlantMonitoringDashboard() {
                     <Waves className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">67%</div>
+                    <div className="text-2xl font-bold">
+                      {mainEstimate?.soilMoisture || "- "}%
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -232,10 +250,9 @@ export default function PlantMonitoringDashboard() {
                     <Leaf className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">9</div>
-                    <p className="text-xs text-muted-foreground">
-                      +2 leaves since last week
-                    </p>
+                    <div className="text-2xl font-bold">
+                      {mainEstimate?.leafCount || "- "}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -246,10 +263,9 @@ export default function PlantMonitoringDashboard() {
                     <Sprout className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">30 cm²</div>
-                    <p className="text-xs text-muted-foreground">
-                      +8 cm² since last week
-                    </p>
+                    <div className="text-2xl font-bold">
+                      {mainEstimate?.greenArea || "- "} cm²
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -266,6 +282,7 @@ export default function PlantMonitoringDashboard() {
                     data={greenAreaData}
                     options={greenAreaOptions}
                   />
+
                   <Chart
                     chartType="LineChart"
                     width="100%"

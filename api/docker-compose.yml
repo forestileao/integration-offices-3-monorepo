@@ -1,0 +1,16 @@
+version: "3.9" # or the latest supported version
+
+services:
+  postgres:
+    image: postgres:15 # Replace with the desired version
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: your_username # Replace with your username
+      POSTGRES_PASSWORD: your_password # Replace with a secure password
+      POSTGRES_DB: your_database # Replace with your database name
+    ports:
+      - "5432:5432" # Maps the container's port 5432 to your machine
+
+volumes:
+  postgres_data:

@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS estimates (
     "chamberId" TEXT NOT NULL,
     "leafCount" INTEGER NOT NULL,
     "greenArea" REAL NOT NULL,
+    "soilMoisture" REAL NOT NULL,
+    "temperature" REAL NOT NULL,
+    "humidity" REAL NOT NULL,
     "estimateDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
