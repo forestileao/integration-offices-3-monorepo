@@ -30,12 +30,25 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
-import { AUTH_HEADER, getProject } from "@/api";
+import { AUTH_HEADER, createParameter, getProject } from "@/api";
 import { Chart } from "react-google-charts";
+
+import firstTemplateImage from "@/assets/image.png";
+import secondTemplateImage from "@/assets/image2.png";
 
 interface Chamber {
   id: string;
   name: string;
+}
+
+interface Parameter {
+  id: string;
+  chamberId: string;
+  soilMoistureLowerLimit: number;
+  lightingRoutine: string;
+  temperatureRange: string;
+  ventilationSchedule: string;
+  photoCaptureFrequency: string;
 }
 
 interface Estimate {
@@ -54,6 +67,7 @@ interface Project {
   name: string;
   chambers: Chamber[];
   estimates: Estimate[];
+  parameters: Parameter[];
 }
 
 export default function PlantMonitoringDashboard() {
@@ -61,6 +75,8 @@ export default function PlantMonitoringDashboard() {
   const [selectedChamber, setSelectedChamber] = useState("1");
   const [project, setProject] = useState<Project>({} as Project);
   const { projectId } = useParams();
+
+  const [parameters, setParameters] = useState<Parameter>({} as Parameter);
 
   const currentChamber = project.chambers?.find(
     (chamber: Chamber) => chamber.id === selectedChamber
@@ -114,6 +130,21 @@ export default function PlantMonitoringDashboard() {
     colors: ["#ff0000"],
   };
 
+  const updateParameters = async () => {
+    await createParameter(
+      selectedChamber,
+      parameters.soilMoistureLowerLimit,
+      parameters.lightingRoutine,
+      parameters.temperatureRange,
+      parameters.ventilationSchedule,
+      parameters.photoCaptureFrequency
+    );
+
+    await getProject((projectId as string) || "").then((data) => {
+      setProject(data);
+    });
+  };
+
   useEffect(() => {
     getProject((projectId as string) || "").then((data) => {
       console.log(data);
@@ -121,6 +152,15 @@ export default function PlantMonitoringDashboard() {
       setSelectedChamber(data.chambers[0].id);
     });
   }, []);
+
+  useEffect(() => {
+    const currentChamberParams = project.parameters?.find(
+      (param: Parameter) => param.chamberId === selectedChamber
+    );
+    if (currentChamberParams) {
+      setParameters(currentChamberParams);
+    }
+  }, [selectedChamber]);
 
   if (!AUTH_HEADER.headers.Authorization) {
     router.push("/");
@@ -308,49 +348,57 @@ export default function PlantMonitoringDashboard() {
                   <div className="space-y-2">
                     <Label htmlFor="light-schedule">Light Schedule</Label>
                     <div className="flex space-x-2">
-                      <Input id="light-on" type="time" placeholder="On Time" />
+                      <Input
+                        id="light-on"
+                        type="time"
+                        placeholder="On Time"
+                        value={parameters?.lightingRoutine?.split("/")[0]}
+                        onChange={(e) => {
+                          setParameters({
+                            ...parameters,
+                            lightingRoutine: `${e.target.value}/${
+                              parameters?.lightingRoutine?.split("/")[1]
+                            }`,
+                          });
+                        }}
+                      />
                       <Input
                         id="light-off"
                         type="time"
                         placeholder="Off Time"
+                        value={parameters?.lightingRoutine?.split("/")[1]}
+                        onChange={(e) => {
+                          setParameters({
+                            ...parameters,
+                            lightingRoutine: `${
+                              parameters?.lightingRoutine?.split("/")[0]
+                            }/${e.target.value}`,
+                          });
+                        }}
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="watering-schedule">Watering Schedule</Label>
-                    <div className="flex space-x-2">
-                      <Input
-                        id="watering-time"
-                        type="time"
-                        placeholder="Watering Time"
-                      />
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Frequency" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="every-other-day">
-                            Every Other Day
-                          </SelectItem>
-                          <SelectItem value="twice-weekly">
-                            Twice Weekly
-                          </SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="temperature">Temperature (°C)</Label>
-                    <Select>
+                    <Select
+                      value={parameters?.temperatureRange}
+                      onValueChange={(value) => {
+                        setParameters({
+                          ...parameters,
+                          temperatureRange: value,
+                        });
+                      }}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select temperature range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="18-22">18-22°C</SelectItem>
-                        <SelectItem value="22-26">22-26°C</SelectItem>
-                        <SelectItem value="26-30">26-30°C</SelectItem>
+                        {[...Array(21)].map((_, i) => (
+                          <SelectItem key={i} value={(i + 10).toString()}>
+                            {(i + 10).toString()}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -360,11 +408,37 @@ export default function PlantMonitoringDashboard() {
                       id="soil-moisture"
                       type="number"
                       placeholder="Enter soil moisture level"
-                      defaultValue={57}
+                      value={parameters?.soilMoistureLowerLimit}
+                      onChange={(e) => {
+                        setParameters({
+                          ...parameters,
+                          soilMoistureLowerLimit: Number(e.target.value),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="photo-capture-frequency">
+                      Photo Capture Frequency (mins)
+                    </Label>
+                    <Input
+                      id="photo-capture-frequency"
+                      type="number"
+                      placeholder="Enter photo capture frequency"
+                      value={parameters?.photoCaptureFrequency}
+                      onChange={(e) => {
+                        setParameters({
+                          ...parameters,
+                          photoCaptureFrequency: e.target.value,
+                        });
+                      }}
                     />
                   </div>
                 </CardContent>
               </Card>
+              <Button onClick={() => updateParameters()} className="w-full">
+                Save Changes
+              </Button>
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-4">
@@ -379,14 +453,28 @@ export default function PlantMonitoringDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {[...Array(8)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="aspect-square bg-muted/50 rounded-md flex items-center justify-center text-muted-foreground"
-                      >
-                        Plant Image {i + 1}
-                      </div>
-                    ))}
+                    <div className="aspect-square bg-muted/50 rounded-md flex flex-col items-center justify-center text-muted-foreground">
+                      <img
+                        style={{ width: 200, height: 200 }}
+                        className="object-cover"
+                        src={firstTemplateImage.src}
+                        alt="wow"
+                      />
+                      <span className="text-muted-foreground">
+                        {new Date("2024-11-27").toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="aspect-square bg-muted/50 rounded-md flex flex-col items-center justify-center text-muted-foreground">
+                      <img
+                        style={{ width: 200, height: 200 }}
+                        className="object-cover"
+                        src={secondTemplateImage.src}
+                        alt="wow"
+                      />
+                      <span className="text-muted-foreground">
+                        {new Date("2024-11-27").toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

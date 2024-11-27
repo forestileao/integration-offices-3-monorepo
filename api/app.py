@@ -228,9 +228,9 @@ def create_project(body = Body(), db: Session = Depends(get_db), current_user: d
             chamberId=chamber.id,
             soilMoistureLowerLimit=60,
             lightingRoutine='07:40/18:20',
-            temperatureRange='20-25',
+            temperatureRange='20',
             ventilationSchedule='10:00/11:00',
-            photoCaptureFrequency='1'
+            photoCaptureFrequency='60'
         )
         db.add(parameter)
         db.commit()
@@ -335,9 +335,22 @@ def list_chambers(db: Session = Depends(get_db), current_user: dict = Depends(ge
 
 # Create Parameters
 @app.post("/parameters/", response_model=dict)
-def create_parameter(chamberId: str, soilMoistureLowerLimit: float, lightingRoutine: str,
-                     temperatureRange: str, ventilationSchedule: str, photoCaptureFrequency: str,
+def create_parameter(chamberId: str = Body(), soilMoistureLowerLimit: float = Body(), lightingRoutine: str = Body(),
+                     temperatureRange: str = Body(), ventilationSchedule: str = Body(), photoCaptureFrequency: str = Body(),
                      db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+
+    current_parameter = db.query(Parameter).filter(Parameter.chamberId == chamberId).first()
+
+    # update current parameter if exists
+    if current_parameter:
+        current_parameter.soilMoistureLowerLimit = soilMoistureLowerLimit
+        current_parameter.lightingRoutine = lightingRoutine
+        current_parameter.temperatureRange = temperatureRange
+        current_parameter.ventilationSchedule = ventilationSchedule
+        current_parameter.photoCaptureFrequency = photoCaptureFrequency
+        db.commit()
+        return {"id": current_parameter.id, "chamberId": current_parameter.chamberId}
+
     parameter = Parameter(
         chamberId=chamberId,
         soilMoistureLowerLimit=soilMoistureLowerLimit,
