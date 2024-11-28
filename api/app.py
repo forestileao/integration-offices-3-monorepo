@@ -410,8 +410,8 @@ def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_
 
 # Create Estimates
 @app.post("/estimates/", response_model=dict)
-def create_estimate(chamberId: str, leafCount: int, greenArea: float, estimateDate: datetime = None,
-                    soilMoisture: float = 0, temperature: float = 0, humidity: float = 0,
+def create_estimate(chamberId: str = Body(), leafCount: int = Body(), greenArea: float = Body(), estimateDate: datetime = Body(),
+                    soilMoisture: float = Body(), temperature: float = Body(), humidity: float = Body(),
                     db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow(),
                         soilMoisture=soilMoisture, temperature=temperature, humidity=humidity)
