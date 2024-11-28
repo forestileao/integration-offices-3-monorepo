@@ -88,8 +88,8 @@ export default function PlantMonitoringDashboard() {
       ?.filter((estimate: Estimate) => estimate.chamberId === selectedChamber)
       .sort((a, b) => {
         return (
-          new Date(b.estimateDate).getTime() -
-          new Date(a.estimateDate).getTime()
+          new Date(a.estimateDate).getTime() -
+          new Date(b.estimateDate).getTime()
         );
       }) || [];
 
