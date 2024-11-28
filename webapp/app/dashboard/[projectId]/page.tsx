@@ -100,7 +100,7 @@ export default function PlantMonitoringDashboard() {
     ...(estimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleTimeString(),
+          new Date(estimate.estimateDate).toLocaleString(),
           estimate.greenArea,
         ])),
   ];
@@ -108,9 +108,9 @@ export default function PlantMonitoringDashboard() {
   const visibleLeavesData = [
     ["x", "Visible Leaves"],
     ...(estimates.length == 0
-      ? [[new Date().toLocaleTimeString(), 0]]
+      ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleTimeString(),
+          new Date(estimate.estimateDate).toLocaleString(),
           estimate.leafCount,
         ])),
   ];
