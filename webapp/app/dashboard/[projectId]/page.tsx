@@ -65,6 +65,7 @@ interface Estimate {
 interface Project {
   id: string;
   name: string;
+  role: string;
   chambers: Chamber[];
   estimates: Estimate[];
   parameters: Parameter[];
@@ -351,6 +352,8 @@ export default function PlantMonitoringDashboard() {
                       <Input
                         id="light-on"
                         type="time"
+                        readOnly={project.role === "viewer"}
+                        disabled={project.role === "viewer"}
                         placeholder="On Time"
                         value={parameters?.lightingRoutine?.split("/")[0]}
                         onChange={(e) => {
@@ -365,6 +368,8 @@ export default function PlantMonitoringDashboard() {
                       <Input
                         id="light-off"
                         type="time"
+                        readOnly={project.role === "viewer"}
+                        disabled={project.role === "viewer"}
                         placeholder="Off Time"
                         value={parameters?.lightingRoutine?.split("/")[1]}
                         onChange={(e) => {
@@ -382,6 +387,7 @@ export default function PlantMonitoringDashboard() {
                   <div className="space-y-2">
                     <Label htmlFor="temperature">Temperature (°C)</Label>
                     <Select
+                      disabled={project.role === "viewer"}
                       value={parameters?.temperatureRange}
                       onValueChange={(value) => {
                         setParameters({
@@ -394,17 +400,18 @@ export default function PlantMonitoringDashboard() {
                         <SelectValue placeholder="Select temperature range" />
                       </SelectTrigger>
                       <SelectContent>
-                        {[...Array(21)].map((_, i) => (
-                          <SelectItem key={i} value={(i + 10).toString()}>
-                            {(i + 10).toString()}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value={"12"}>10 - 15 °C</SelectItem>
+                        <SelectItem value={"17"}>15 - 20 °C</SelectItem>
+                        <SelectItem value={"22"}>20 - 25 °C</SelectItem>
+                        <SelectItem value={"28"}>25 - 30 °C</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="soil-moisture">Soil Moisture (%)</Label>
                     <Input
+                      readOnly={project.role === "viewer"}
+                      disabled={project.role === "viewer"}
                       id="soil-moisture"
                       type="number"
                       placeholder="Enter soil moisture level"
@@ -422,6 +429,8 @@ export default function PlantMonitoringDashboard() {
                       Photo Capture Frequency (mins)
                     </Label>
                     <Input
+                      readOnly={project.role === "viewer"}
+                      disabled={project.role === "viewer"}
                       id="photo-capture-frequency"
                       type="number"
                       placeholder="Enter photo capture frequency"
@@ -436,9 +445,11 @@ export default function PlantMonitoringDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Button onClick={() => updateParameters()} className="w-full">
-                Save Changes
-              </Button>
+              {project.role === "admin" && (
+                <Button onClick={() => updateParameters()} className="w-full">
+                  Save Changes
+                </Button>
+              )}
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-4">

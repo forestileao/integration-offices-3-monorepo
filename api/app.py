@@ -269,8 +269,14 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
 
 @app.get("/projects/{project_id}/", response_model=dict)
 def get_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    project = db.query(Project).filter(Project.id == project_id).first()
-    if not project:
+    role_user_data = db.query(Project, RoleUser.roleId, Role.roleName) \
+        .join(RoleUser, RoleUser.projectId == Project.id) \
+        .join(Role, Role.id == RoleUser.roleId) \
+        .filter(RoleUser.userId == current_user["sub"]) \
+        .filter(Project.deleted == 0) \
+        .filter(Project.id == project_id) \
+        .first()
+    if not role_user_data:
         raise HTTPException(status_code=404, detail="Project not found")
 
     # get parameters, chambers, estimates for the project
@@ -278,9 +284,11 @@ def get_project(project_id: str, db: Session = Depends(get_db), current_user: di
     parameters = db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers])).all()
     estimates = db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers])).all()
 
+    project, _role_id, role_name = role_user_data
     return {
         "id": project.id,
         "name": project.name,
+        "role": role_name,
         "chambers": chambers,
         "parameters": parameters,
         "estimates": estimates
