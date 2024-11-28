@@ -93,12 +93,12 @@ export default function PlantMonitoringDashboard() {
         );
       }) || [];
 
-  const mainEstimate = estimates[0];
+  const mainEstimate = estimates.at(-1);
 
   const greenAreaData = [
     ["x", "Green Area"],
     ...(estimates.length == 0
-      ? [[new Date().toLocaleTimeString(), 0]]
+      ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
           new Date(estimate.estimateDate).toLocaleTimeString(),
           estimate.greenArea,
