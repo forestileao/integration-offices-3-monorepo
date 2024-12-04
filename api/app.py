@@ -341,6 +341,19 @@ def list_chambers(db: Session = Depends(get_db), current_user: dict = Depends(ge
     chambers = db.query(Chamber).all()
     return [{"id": c.id, "name": c.name, "projectId": c.projectId} for c in chambers]
 
+@app.get("/chamber/parameters/{chamber_id}/", response_model=dict)
+def get_chamber_parameters(chamber_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    parameters = db.query(Parameter).filter(Parameter.chamberId == chamber_id).first()
+    return {
+        "id": parameters.id,
+        "chamberId": parameters.chamberId,
+        "soilMoistureLowerLimit": parameters.soilMoistureLowerLimit,
+        "lightingRoutine": parameters.lightingRoutine,
+        "temperatureRange": parameters.temperatureRange,
+        "ventilationSchedule": parameters.ventilationSchedule,
+        "photoCaptureFrequency": parameters.photoCaptureFrequency
+    }
+
 # Create Parameters
 @app.post("/parameters/", response_model=dict)
 def create_parameter(chamberId: str = Body(), soilMoistureLowerLimit: float = Body(), lightingRoutine: str = Body(),
