@@ -26,7 +26,7 @@ void up(int steps) {
   Serial.print("Moving up with ");
   Serial.print(steps);
   Serial.println(" steps.");
-  
+
   digitalWrite(X_DIR, false);
   digitalWrite(Y_DIR, true);
 
@@ -46,7 +46,7 @@ void down(int steps) {
   Serial.print("Moving down with ");
   Serial.print(steps);
   Serial.println(" steps.");
-  
+
   digitalWrite(X_DIR, true);
   digitalWrite(Y_DIR, false);
 
@@ -66,7 +66,7 @@ void left(int steps) {
   Serial.print("Moving left with ");
   Serial.print(steps);
   Serial.println(" steps.");
-  
+
   digitalWrite(X_DIR, true);
   digitalWrite(Y_DIR, true);
 
@@ -86,7 +86,7 @@ void right(int steps) {
   Serial.print("Moving right with ");
   Serial.print(steps);
   Serial.println(" steps.");
-  
+
   digitalWrite(X_DIR, false);
   digitalWrite(Y_DIR, false);
 
