@@ -129,10 +129,10 @@ class Firmware:
 
       if soil_moisture < desired_soil_moisture:
           print("Turning on pump for chamber: ", chamber_id)
-          self.pump_controller.turn_on_pump(chamber_id)
+          self.pump_controller.set_pump_speed(chamber_id, 50)
           sleep(3)
           print("Turning off pump for chamber: ", chamber_id)
-          self.pump_controller.turn_off_pump(chamber_id)
+          self.pump_controller.set_pump_speed(chamber_id, 0)
 
   def send_metrics(self, chamber_id):
     temperature = self.temp_humidity.read_temperature(chamber_id)
