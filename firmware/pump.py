@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from time import sleep
 
 class PumpController:
     def __init__(self, chambers, frequency=1000):
@@ -24,4 +25,6 @@ class PumpController:
 # Example usage
 if __name__ == "__main__":
     pump = PumpController(pump_pin=18)
-    pump.run_demo()
+    pump.set_pump_speed(50)
+    sleep(3)
+    pump.set_pump_speed(0)
