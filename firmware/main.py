@@ -8,7 +8,8 @@ from http_api import HttpApi
 from photo import CameraController
 from timer_pkg import Timer
 
-from time import datetime, sleep
+from time import sleep
+import datetime
 
 GPIO.setmode(GPIO.BCM)
 
