@@ -14,19 +14,21 @@ class AdcController:
         self.ads = ADS.ADS1115(self.i2c)
 
         # Define the analog input channel
-        self.channel = AnalogIn(self.ads, ADS.P0)
+        self.channels = [
+            AnalogIn(self.ads, ADS.P0),
+            AnalogIn(self.ads, ADS.P1),
+            AnalogIn(self.ads, ADS.P2),
+            AnalogIn(self.ads, ADS.P3),
+        ]
 
-
-    def read_value(self):
-        return self.channel.value
-
-    def read_voltage(self):
-        return self.channel.voltage
-
+    def read_value(self, channel):
+        return self.channels[channel].value
+    def read_voltage(self, channel):
+        return self.channels[channel].voltage
 
 if __name__ == "__main__":
     adc = AdcController()
     while True:
-        print(f"ADC Value: {adc.read_value()}")
-        print(f"Voltage: {adc.read_voltage()}")
+        print(f"ADC Value: {adc.read_value(0)}")
+        print(f"Voltage: {adc.read_voltage(0)}")
         time.sleep(1)

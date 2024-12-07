@@ -19,7 +19,7 @@ class HttpApi:
 
     return response.json()
 
-  def send_metrics(self, chamber_id: str, soil_moisture: float, temperature: float, humidity: float, api_url: str, token: str):
+  def send_metrics(self, chamber_id: str, soil_moisture: float, temperature: float, humidity: float, water_level: float):
 
     payload = {
         "chamberId": chamber_id,
@@ -28,10 +28,16 @@ class HttpApi:
         "estimateDate": datetime.now().isoformat(),  # Format the datetime to ISO string
         "soilMoisture": soil_moisture or 50,  # Replace with actual soil moisture sensor value
         "temperature": temperature or 25,  # Replace with actual temperature sensor value
-        "humidity": humidity or 50  # Replace with actual humidity sensor value
+        "humidity": humidity or 50,  # Replace with actual humidity sensor value
+        "waterLevel": water_level  # Replace with actual water level sensor value
     }
 
 
-    response = post(api_url + '/estimates/', json=payload, headers={"Authorization": token})
+    response = post(self.base_url + '/estimates/', json=payload, headers=self.headers)
+
+    return response.status_code >= 200 and response.status_code < 300
+
+  def send_photo(self, chamber_id: str, img_bin: bytes):
+    response = post(self.base_url + '/chamber/photo/' + chamber_id, files={'file': img_bin}, headers=self.headers)
 
     return response.status_code >= 200 and response.status_code < 300
