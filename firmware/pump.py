@@ -7,7 +7,7 @@ class PumpController:
 
         for chamber in chambers:
             GPIO.setup(chamber['pumpPin'], GPIO.OUT)
-            chamber['pwm'] = GPIO.PWM(chamber["pwm_pin"], self.frequency)
+            chamber['pwm'] = GPIO.PWM(chamber["pumpPin"], self.frequency)
 
             # Set up PWM
             chamber['pwm'].start(0)  # Start PWM with a duty cycle of 0 (motor off)
