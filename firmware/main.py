@@ -4,9 +4,9 @@ from temp_humidity import TempHumidity
 from pump import PumpController
 from stepper import StepperController
 from adc import AdcController
-from .http import HttpApi
+from http_api import HttpApi
 from photo import CameraController
-from .timer import Timer
+from timer_pkg import Timer
 
 from time import datetime, sleep
 
