@@ -47,11 +47,6 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 
-# Secret key to encode and decode JWT
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
 # Create a passlib context for password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
