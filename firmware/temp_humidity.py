@@ -3,7 +3,7 @@ from SDL_Pi_HDC1080 import SDL_Pi_HDC1080
 
 
 class TempHumidity:
-  def __init__(self, chambers) -> None:
+  def __init__(self, chambers=[]) -> None:
     self.chambers = chambers
     self.hdc1080 = SDL_Pi_HDC1080()
 
@@ -40,3 +40,7 @@ class TempHumidity:
     for chamber in self.chambers:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['peltierPin'], GPIO.LOW)
+
+if __name__ == '__main__':
+    temp = TempHumidity()
+    print(temp.read_temperature('aaa'))
