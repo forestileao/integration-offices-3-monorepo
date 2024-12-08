@@ -24,4 +24,4 @@ RUN if [ -f database.sql ]; then echo "Schema file found."; else echo "Schema fi
 EXPOSE 8000
 
 # Run the application using Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["sh", "-c", "mkdir -p /app/uploads && uvicorn app:app --host 0.0.0.0 --port 8000 --reload"]

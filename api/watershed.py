@@ -54,7 +54,9 @@ def extract_green(img):
 
 
 def apply_watershed(img_binary):
-  image = cv2.imread(img_binary)
+  # CV2
+  nparr = np.fromstring(img_binary, np.uint8)
+  image = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # cv2.IMREAD_COLOR in OpenCV 3.1
   original = image.copy()
 
   image = remove_white_from_image(image)
@@ -98,7 +100,7 @@ def apply_watershed(img_binary):
   markers[unknown == 255] = 0
 
   # watershed Algorithm
-  markers = cv2.watershed(img, markers)
+  markers = cv2.watershed(image, markers)
 
   labels = np.unique(markers)
 

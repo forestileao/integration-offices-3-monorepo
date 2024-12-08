@@ -289,7 +289,7 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return projects
 
 
-@app.get("/projects/{project_id}/", response_model=dict)
+@app.get("/projects/{project_id}", response_model=dict)
 async def get_project(
     project_id: str,
     db: AsyncSession = Depends(get_async_db),
@@ -454,17 +454,21 @@ def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: di
 
 # get photo from disk and display binary
 @app.get("/photo/{photo_id}/")
-def get_photo(photo_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_photo(photo_id: str, db: Session = Depends(get_db)):
 
     photo = db.query(Photo).filter(Photo.id == photo_id).first()
 
     if not photo:
         raise HTTPException(status_code=404, detail="Photo not found")
 
-    with open(photo.imageUrl, "rb") as img_file:
-        img_stream = img_file.read()
+    try:
+        # Open the image file in binary mode for streaming
+        img_file = open(photo.imageUrl, "rb")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Image file not found")
 
-    return StreamingResponse(content=img_stream, media_type="image/jpeg")
+    # Return the file as a streaming response
+    return StreamingResponse(img_file, media_type="image/jpeg")
 
 
 @app.post("/photos/", response_model=dict)
@@ -477,7 +481,7 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
 
     # Save the file to the local filesystem
     with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(marked_binary, buffer)
+        buffer.write(marked_binary)
 
     # update last estimate with the new photo
     last_estimate = db.query(Estimate) \
@@ -499,9 +503,11 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
     # Return the photo details
     return {"id": photo_entry.id, "chamberId": photo_entry.chamberId, "imageUrl": photo_entry.imageUrl}
 
-@app.get("/photos/", response_model=list)
-def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    photos = db.query(Photo).all()
+@app.get("/photos/{chamber_id}/", response_model=list)
+def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    photos = db.query(Photo) \
+        .filter(Photo.chamberId == chamber_id) \
+        .all()
     return [{"id": p.id, "chamberId": p.chamberId, "captureDate": p.captureDate, "imageUrl": p.imageUrl} for p in photos]
 
 # Create Estimates

@@ -12,7 +12,7 @@ class HttpApi:
 
 
   def get_parameters(self, chamber_id):
-    response = get(self.base_url + '/chamber/parameters/' + chamber_id, headers=self.headers)
+    response = get(self.base_url + '/chamber/parameters/' + chamber_id + '/', headers=self.headers)
 
     if response.status_code != 200:
       return None
@@ -38,6 +38,12 @@ class HttpApi:
     return response.status_code >= 200 and response.status_code < 300
 
   def send_photo(self, chamber_id: str, img_bin: bytes):
-    response = post(self.base_url + '/chamber/photo/' + chamber_id, files={'file': img_bin}, headers=self.headers)
-
+    files = {
+        'photo': ('photo.jpg', img_bin, 'image/jpeg')  # Specify filename and content type
+    }
+    response = post(
+        self.base_url + '/photos/?chamberId=' + chamber_id,
+        files=files,
+        headers=self.headers
+    )
     return response.status_code >= 200 and response.status_code < 300

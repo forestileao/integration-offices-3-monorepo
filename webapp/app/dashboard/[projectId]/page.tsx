@@ -30,11 +30,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
-import { AUTH_HEADER, createParameter, getProject } from "@/api";
+import {
+  API_URL,
+  AUTH_HEADER,
+  createParameter,
+  getPhotos,
+  getProject,
+} from "@/api";
 import { Chart } from "react-google-charts";
-
-import firstTemplateImage from "@/assets/image.png";
-import secondTemplateImage from "@/assets/image2.png";
 
 interface Chamber {
   id: string;
@@ -71,10 +74,17 @@ interface Project {
   parameters: Parameter[];
 }
 
+interface Photo {
+  id: string;
+  chamberId: string;
+  captureDate: string;
+}
+
 export default function PlantMonitoringDashboard() {
   const router = useRouter();
   const [selectedChamber, setSelectedChamber] = useState("1");
   const [project, setProject] = useState<Project>({} as Project);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const { projectId } = useParams();
 
   const [parameters, setParameters] = useState<Parameter>({} as Parameter);
@@ -161,6 +171,11 @@ export default function PlantMonitoringDashboard() {
     if (currentChamberParams) {
       setParameters(currentChamberParams);
     }
+
+    // Fetch photos for selected chamber
+    getPhotos(selectedChamber).then((data) => {
+      setPhotos(data);
+    });
   }, [selectedChamber]);
 
   if (!AUTH_HEADER.headers.Authorization) {
@@ -464,28 +479,26 @@ export default function PlantMonitoringDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <div className="aspect-square bg-muted/50 rounded-md flex flex-col items-center justify-center text-muted-foreground">
-                      <img
-                        style={{ width: 200, height: 200 }}
-                        className="object-cover"
-                        src={firstTemplateImage.src}
-                        alt="wow"
-                      />
-                      <span className="text-muted-foreground">
-                        {new Date("2024-11-27").toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="aspect-square bg-muted/50 rounded-md flex flex-col items-center justify-center text-muted-foreground">
-                      <img
-                        style={{ width: 200, height: 200 }}
-                        className="object-cover"
-                        src={secondTemplateImage.src}
-                        alt="wow"
-                      />
-                      <span className="text-muted-foreground">
-                        {new Date("2024-11-27").toLocaleString()}
-                      </span>
-                    </div>
+                    {photos.map((photo: Photo) => (
+                      <div
+                        key={photo.id}
+                        className="aspect-square bg-muted/50 rounded-md flex flex-col items-center justify-center text-muted-foreground"
+                      >
+                        <img
+                          style={{ width: 200, height: 200 }}
+                          className="object-cover"
+                          src={`${API_URL}/photo/${photo.id}/`}
+                          alt={photo.id}
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://demofree.sirv.com/nope-not-here.jpg";
+                          }}
+                        />
+                        <span className="text-muted-foreground">
+                          {new Date(photo.captureDate).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

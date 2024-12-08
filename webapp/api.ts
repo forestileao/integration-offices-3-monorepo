@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"; // Replace with your actual API URL
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"; // Replace with your actual API URL
 export let AUTH_HEADER = {
   headers: {
     Authorization: ``, // Assuming the token is stored in localStorage
@@ -138,6 +139,19 @@ export const getProject = async (projectId: string) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching project", error);
+    throw error;
+  }
+};
+
+export const getPhotos = async (chamberId: string) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/photos/${chamberId}/`,
+      AUTH_HEADER
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching photos", error);
     throw error;
   }
 };
