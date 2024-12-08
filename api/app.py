@@ -461,10 +461,14 @@ def get_photo(photo_id: str, db: Session = Depends(get_db), current_user: dict =
     if not photo:
         raise HTTPException(status_code=404, detail="Photo not found")
 
-    with open(photo.imageUrl, "rb") as img_file:
-        img_stream = img_file.read()
+    try:
+        # Open the image file in binary mode for streaming
+        img_file = open(photo.imageUrl, "rb")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Image file not found")
 
-    return StreamingResponse(content=img_stream, media_type="image/jpeg")
+    # Return the file as a streaming response
+    return StreamingResponse(img_file, media_type="image/jpeg")
 
 
 @app.post("/photos/", response_model=dict)
