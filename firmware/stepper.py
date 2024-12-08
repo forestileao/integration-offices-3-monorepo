@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 class StepperController:
-    def __init__(self, x_dir_pin, x_step_pin, y_dir_pin, y_step_pin, enable_pin, delay_time_microseconds=300):
+    def __init__(self, x_dir_pin, x_step_pin, y_dir_pin, y_step_pin, enable_pin, end1_pin, end2_pin, delay_time_microseconds=300):
         """
         Initialize the stepper motor controller.
 
@@ -18,6 +18,8 @@ class StepperController:
         self.y_dir_pin = y_dir_pin
         self.y_step_pin = y_step_pin
         self.enable_pin = enable_pin
+        self.end1_pin = end1_pin
+        self.end2_pin = end2_pin
         self.delay_time = delay_time_microseconds / 1_000_000  # Convert to seconds for `time.sleep`
 
         GPIO.setup(self.x_dir_pin, GPIO.OUT)
@@ -25,6 +27,8 @@ class StepperController:
         GPIO.setup(self.y_dir_pin, GPIO.OUT)
         GPIO.setup(self.y_step_pin, GPIO.OUT)
         GPIO.setup(self.enable_pin, GPIO.OUT)
+        GPIO.setup(self.end1_pin, GPIO.IN)
+        GPIO.setup(self.end2_pin, GPIO.IN)
 
         # Enable motor driver
         GPIO.output(self.enable_pin, GPIO.LOW)
@@ -39,8 +43,19 @@ class StepperController:
         """
         GPIO.output(self.x_dir_pin, x_dir)
         GPIO.output(self.y_dir_pin, y_dir)
+        is_move_down = x_dir and not y_dir
+        is_move_left = x_dir and y_dir
 
         for _ in range(steps):
+
+            if is_move_down and self.check_end1():
+                print("End1 reached")
+                break
+
+            if is_move_left and self.check_end2():
+                print("End2 reached")
+                break
+
             GPIO.output(self.x_step_pin, GPIO.HIGH)
             GPIO.output(self.y_step_pin, GPIO.HIGH)
             time.sleep(self.delay_time)
@@ -69,3 +84,9 @@ class StepperController:
         Clean up GPIO settings.
         """
         GPIO.cleanup()
+
+    def check_end1(self):
+        return GPIO.input(self.end1_pin) == GPIO.HIGH
+
+    def check_end2(self):
+        return GPIO.input(self.end2_pin) == GPIO.HIGH

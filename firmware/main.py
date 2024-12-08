@@ -65,6 +65,9 @@ Y_DIR=7
 X_STP=6
 Y_STP=8
 
+END1=10
+END2=11
+
 
 class Firmware:
 
@@ -72,7 +75,7 @@ class Firmware:
     self.lamps_manager = LampsManager(chambers)
     self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
-    self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN)
+    self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
     self.adc = AdcController()
     self.api = HttpApi()
     self.camera = CameraController()
