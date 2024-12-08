@@ -454,7 +454,7 @@ def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: di
 
 # get photo from disk and display binary
 @app.get("/photo/{photo_id}/")
-def get_photo(photo_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_photo(photo_id: str, db: Session = Depends(get_db)):
 
     photo = db.query(Photo).filter(Photo.id == photo_id).first()
 
@@ -503,9 +503,11 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
     # Return the photo details
     return {"id": photo_entry.id, "chamberId": photo_entry.chamberId, "imageUrl": photo_entry.imageUrl}
 
-@app.get("/photos/", response_model=list)
-def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    photos = db.query(Photo).all()
+@app.get("/photos/{chamber_id}/", response_model=list)
+def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    photos = db.query(Photo) \
+        .filter(Photo.chamberId == chamber_id) \
+        .all()
     return [{"id": p.id, "chamberId": p.chamberId, "captureDate": p.captureDate, "imageUrl": p.imageUrl} for p in photos]
 
 # Create Estimates
