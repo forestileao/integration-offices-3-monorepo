@@ -13,6 +13,7 @@ from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+
 import uuid
 from pydantic import PostgresDsn
 from datetime import datetime
@@ -88,7 +89,7 @@ def verify_token(token: str):
 # SQLAlchemy setup
 Base = declarative_base()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-assync_session = sessionmaker(autocommit=False, autoflush=False, bind=async_engine)
+assync_session = sessionmaker(autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession, expire_on_commit=False)
 
 def initialize_database():
     schema_path = "database.sql"
@@ -287,22 +288,44 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return projects
 
 @app.get("/projects/{project_id}/", response_model=dict)
-async def get_project(project_id: str, db: AsyncSession = Depends(get_async_db), current_user: dict = Depends(get_current_user)):
-    role_user_data = await db.query(Project, RoleUser.roleId, Role.roleName) \
-        .join(RoleUser, RoleUser.projectId == Project.id) \
-        .join(Role, Role.id == RoleUser.roleId) \
-        .filter(RoleUser.userId == current_user["sub"]) \
-        .filter(Project.deleted == 0) \
-        .filter(Project.id == project_id) \
-        .first()
+async def get_project(
+    project_id: str,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: dict = Depends(get_current_user)
+):
+    role_user_data = await db.execute(
+        db.query(Project, RoleUser.roleId, Role.roleName)
+        .join(RoleUser, RoleUser.projectId == Project.id)
+        .join(Role, Role.id == RoleUser.roleId)
+        .filter(RoleUser.userId == current_user["sub"])
+        .filter(Project.deleted == 0)
+        .filter(Project.id == project_id)
+    )
+    role_user_data = role_user_data.first()
 
     if not role_user_data:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    # get parameters, chambers, estimates for the project
-    chambers = await db.query(Chamber).filter(Chamber.projectId == project_id).all()
-    parameters_task = asyncio.create_task(db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers])).all())
-    estimates_task = asyncio.create_task(db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers])).all())
+    chambers = await db.execute(
+        db.query(Chamber).filter(Chamber.projectId == project_id)
+    )
+    chambers = chambers.scalars().all()
+
+    # Create tasks for parameters and estimates
+    parameters_task = asyncio.create_task(
+        db.execute(
+            db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers]))
+        )
+    )
+    estimates_task = asyncio.create_task(
+        db.execute(
+            db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers]))
+        )
+    )
+
+    # Get results
+    parameters = await parameters_task
+    estimates = await estimates_task
 
     project, _role_id, role_name = role_user_data
     return {
@@ -310,9 +333,10 @@ async def get_project(project_id: str, db: AsyncSession = Depends(get_async_db),
         "name": project.name,
         "role": role_name,
         "chambers": chambers,
-        "parameters": [p async for p in (await parameters_task).scalars()],
-        "estimates": [e async for e in (await estimates_task).scalars()]
-        }
+        "parameters": parameters.scalars().all(),
+        "estimates": estimates.scalars().all(),
+    }
+
 
 @app.delete("/projects/{project_id}/", response_model=dict)
 def delete_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
