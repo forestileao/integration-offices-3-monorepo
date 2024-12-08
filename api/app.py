@@ -289,7 +289,7 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return projects
 
 
-@app.get("/projects/{project_id}/", response_model=dict)
+@app.get("/projects/{project_id}", response_model=dict)
 async def get_project(
     project_id: str,
     db: AsyncSession = Depends(get_async_db),
