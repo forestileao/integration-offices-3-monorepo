@@ -20,7 +20,7 @@ class StepperController:
         self.enable_pin = enable_pin
         self.end1_pin = end1_pin
         self.end2_pin = end2_pin
-        self.delay_time = delay_time_microseconds / 1_000_000  # Convert to seconds for `time.sleep`
+        self.delay_time = delay_time_microseconds / 1000000  # Convert to seconds for `time.sleep`
 
         GPIO.setup(self.x_dir_pin, GPIO.OUT)
         GPIO.setup(self.x_step_pin, GPIO.OUT)
@@ -57,9 +57,11 @@ class StepperController:
                 break
 
             GPIO.output(self.x_step_pin, GPIO.HIGH)
+            time.sleep(self.delay_time)
             GPIO.output(self.y_step_pin, GPIO.HIGH)
             time.sleep(self.delay_time)
             GPIO.output(self.x_step_pin, GPIO.LOW)
+            time.sleep(self.delay_time)
             GPIO.output(self.y_step_pin, GPIO.LOW)
             time.sleep(self.delay_time)
 
@@ -90,3 +92,17 @@ class StepperController:
 
     def check_end2(self):
         return GPIO.input(self.end2_pin) == GPIO.HIGH
+
+if __name__ == "__main__":
+    GPIO.setmode(GPIO.BCM)
+    sc = StepperController(5,6,7,8,9,10,11)
+    while True:
+        usr_in = input("[w]Cima\n[s]Baixo\n[a]Direita\n[d]Esquerda\n")
+        if usr_in == 'w':
+            sc.move_up(50)
+        elif usr_in == 's':
+            sc.move_down(50)
+        elif usr_in == 'a':
+            sc.move_left(50)
+        elif usr_in == 'd':
+            sc.move_right(50)
