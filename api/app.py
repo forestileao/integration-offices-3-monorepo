@@ -477,7 +477,7 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
 
     # Save the file to the local filesystem
     with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(marked_binary, buffer)
+        buffer.write(marked_binary)
 
     # update last estimate with the new photo
     last_estimate = db.query(Estimate) \
