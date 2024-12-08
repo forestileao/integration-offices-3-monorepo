@@ -25,6 +25,7 @@ chambers = [
       'chamberLocation': 20,
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
+      'ledLightsActivated': False,
       'parameters': {
         "temperatureRange": "17",
         "soilMoistureLowerLimit": 60,
@@ -44,6 +45,7 @@ chambers = [
       'chamberLocation': 200,
       'waterLevelChannel': 2,
       'soilMoistureChannel': 3,
+      'ledLightsActivated': False,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -85,8 +87,20 @@ class Firmware:
   def get_parameters(self, chamber_id):
     return self.api.get_parameters(chamber_id)
 
-  def take_photo(self):
-    return self.camera.capture_image()
+  def take_photo(self, chamber_id):
+    led_status = chambers[chamber_id]['ledLightsActivated']
+
+    self.lamps_manager.turnOffLedLamp(chamber_id)
+    sleep(0.1)
+    self.lamps_manager.turnOnWhiteLamp(chamber_id)
+    img_bin = self.camera.capture_image()
+    self.lamps_manager.turnOffWhiteLamp(chamber_id)
+    sleep(0.1)
+
+    if led_status:
+      self.lamps_manager.turnOnLedLamp(chamber_id)
+
+    return img_bin
 
 
   def sendPhoto(self, chamber_id, img_bin):
@@ -97,16 +111,26 @@ class Firmware:
 
 
   def control_lights(self, chamber_Id, parameters):
-      current_hour_and_minutes = datetime.now().strftime('%H:%M')
-      lighting_routine_lower_time = datetime.strptime(parameters['lightingRoutine'].split('/')[0], '%H:%M')
-      lighting_routine_upper_time = datetime.strptime(parameters['lightingRoutine'].split('/')[1], '%H:%M')
+      # Get current time as a datetime object
+      current_time = datetime.now().time()
 
-      if lighting_routine_lower_time <= current_hour_and_minutes <= lighting_routine_upper_time:
+      # Parse the lighting routine times
+      lighting_routine_lower_time = datetime.strptime(parameters['lightingRoutine'].split('/')[0], '%H:%M').time()
+      lighting_routine_upper_time = datetime.strptime(parameters['lightingRoutine'].split('/')[1], '%H:%M').time()
+
+      # Check if current time falls within the lighting routine
+      if lighting_routine_lower_time <= current_time <= lighting_routine_upper_time:
           self.lamps_manager.turnOnLedLamp(chamber_Id)
-          print("Turning on LED lamp for chamber: ", chamber_Id)
+          print("Turning on LED lamp for chamber:", chamber_Id)
+          for chamber in chambers:
+              if chamber['id'] == chamber_Id:
+                  chamber['ledLightsActivated'] = True
       else:
           self.lamps_manager.turnOffLedLamp(chamber_Id)
-          print("Turning off LED lamp for chamber: ", chamber_Id)
+          print("Turning off LED lamp for chamber:", chamber_Id)
+          for chamber in chambers:
+              if chamber['id'] == chamber_Id:
+                  chamber['ledLightsActivated'] = False
 
   def control_temperature(self, chamber_id, parameters):
     temperature = self.temp_humidity.read_temperature(chamber_id)
@@ -186,7 +210,7 @@ def main():
 
             if int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.move_camera(chamber_id)
-                img_bin = firmware.take_photo()
+                img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
                 photoTimer.reset()
 

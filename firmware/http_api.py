@@ -7,7 +7,7 @@ class HttpApi:
     self.headers = {
     "accept": "application/json, text/plain, */*",
     "accept-language": "en-US,en;q=0.5",
-    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNTBhZjE0My01MWEyLTQwOWQtOWMwMC0xNTg4OGRkMjM2MDQiLCJleHAiOjE3MzMyODA4MjJ9.awasT04BX2fx4dtmIwkrATYdshRdFZvZNeuiHIgsrVg"
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNTBhZjE0My01MWEyLTQwOWQtOWMwMC0xNTg4OGRkMjM2MDQiLCJleHAiOjIwNDg5OTM4OTZ9.sjHbrpfdcE1iFevoeW4QbgLtil1L35GIeTXeoG9n2hg"
     }
 
 
