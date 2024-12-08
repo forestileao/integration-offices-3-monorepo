@@ -14,4 +14,4 @@ class CameraController:
 
     print("Captured image into JPEG binary")
 
-    return jpeg_binary
+    return jpeg_binary.tobytes()
