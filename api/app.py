@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, status, Body, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
+from watershed import apply_watershed
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -14,6 +16,7 @@ import uuid
 from pydantic import PostgresDsn
 from datetime import datetime
 import os
+import asyncio  # For asyncio.gather
 
 SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
     scheme="postgresql",
@@ -144,6 +147,7 @@ class Estimate(Base):
     leafCount = Column(Integer, nullable=False)
     greenArea = Column(Float, nullable=False)
     estimateDate = Column(DateTime, default=datetime.utcnow)
+    waterLevel = Column(Float, nullable=False)
     soilMoisture = Column(Float, nullable=False)
     temperature = Column(Float, nullable=False)
     humidity = Column(Float, nullable=False)
@@ -268,7 +272,7 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
     return projects
 
 @app.get("/projects/{project_id}/", response_model=dict)
-def get_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+async def get_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     role_user_data = db.query(Project, RoleUser.roleId, Role.roleName) \
         .join(RoleUser, RoleUser.projectId == Project.id) \
         .join(Role, Role.id == RoleUser.roleId) \
@@ -281,8 +285,8 @@ def get_project(project_id: str, db: Session = Depends(get_db), current_user: di
 
     # get parameters, chambers, estimates for the project
     chambers = db.query(Chamber).filter(Chamber.projectId == project_id).all()
-    parameters = db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers])).all()
-    estimates = db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers])).all()
+    parameters_task = asyncio.create_task(db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers])).all())
+    estimates_task = asyncio.create_task(db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers])).all())
 
     project, _role_id, role_name = role_user_data
     return {
@@ -290,8 +294,8 @@ def get_project(project_id: str, db: Session = Depends(get_db), current_user: di
         "name": project.name,
         "role": role_name,
         "chambers": chambers,
-        "parameters": parameters,
-        "estimates": estimates
+        "parameters": await parameters_task,
+        "estimates": await estimates_task
         }
 
 @app.delete("/projects/{project_id}/", response_model=dict)
@@ -398,14 +402,49 @@ def list_parameters(db: Session = Depends(get_db), current_user: dict = Depends(
         "photoCaptureFrequency": p.photoCaptureFrequency
     } for p in parameters]
 
+
+@app.get("/chamber/photo/{chamber_id}/", response_model=dict)
+def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    photos = db.query(Photo).filter(Photo.chamberId == chamber_id).all()
+    return [{"id": p.id, "chamberId": p.chamberId, "captureDate": p.captureDate, "imageUrl": p.imageUrl} for p in photos]
+
+# get photo from disk and display binary
+@app.get("/photo/{photo_id}/")
+def get_photo(photo_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+
+    photo = db.query(Photo).filter(Photo.id == photo_id).first()
+
+    if not photo:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    with open(photo.imageUrl, "rb") as img_file:
+        img_stream = img_file.read()
+
+    return StreamingResponse(content=img_stream, media_type="image/jpeg")
+
+
 @app.post("/photos/", response_model=dict)
 def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    binary = photo.file.read()
+    marked_binary, green_area, leaf_count = apply_watershed(binary)
+
     # Generate a unique filename for the uploaded image
     file_location = f"uploads/{generate_uuid()}_{photo.filename}"
 
     # Save the file to the local filesystem
     with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(photo.file, buffer)
+        shutil.copyfileobj(marked_binary, buffer)
+
+    # update last estimate with the new photo
+    last_estimate = db.query(Estimate) \
+        .filter(Estimate.chamberId == chamberId) \
+        .filter(Estimate.greenArea == 99999) \
+        .order_by(Estimate.estimateDate.desc()).first()
+
+    if last_estimate:
+        last_estimate.greenArea = green_area
+        last_estimate.leafCount = leaf_count
+        db.commit()
 
     # Create a new Photo entry in the database
     photo_entry = Photo(chamberId=chamberId, imageUrl=file_location)
@@ -425,9 +464,10 @@ def list_photos(db: Session = Depends(get_db), current_user: dict = Depends(get_
 @app.post("/estimates/", response_model=dict)
 def create_estimate(chamberId: str = Body(), leafCount: int = Body(), greenArea: float = Body(), estimateDate: datetime = Body(),
                     soilMoisture: float = Body(), temperature: float = Body(), humidity: float = Body(),
+                    waterLevel: float = Body(),
                     db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow(),
-                        soilMoisture=soilMoisture, temperature=temperature, humidity=humidity)
+                        soilMoisture=soilMoisture, temperature=temperature, humidity=humidity, waterLevel=waterLevel)
     db.add(estimate)
     db.commit()
     db.refresh(estimate)
@@ -438,7 +478,7 @@ def create_estimate(chamberId: str = Body(), leafCount: int = Body(), greenArea:
 def list_estimates(chamberId = None, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if chamberId:
         estimates = db.query(Estimate).filter(Estimate.chamberId == chamberId).all()
-        return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate} for e in estimates]
+        return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate, "waterLevel": e.waterLevel} for e in estimates]
 
     estimates = db.query(Estimate).all()
     return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate} for e in estimates]

@@ -6,3 +6,5 @@ python-jose
 passlib
 pydantic==1.10.12
 psycopg2==2.9.9
+numpy
+opencv-python-headless

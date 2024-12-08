@@ -153,3 +153,6 @@ WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE "roleId" = 'a5f17a1d-d6c7
 INSERT INTO user_permissions (id, "permissionId", "roleId")
 SELECT 'b94db756-4e92-4625-b877-1e263e4b52c0', '5705f902-3f27-41c9-b1fc-d12a70fa1c9e', '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d'
 WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE "roleId" = '1e1a0e30-bfae-4b9c-bb5b-2e9a91f9058d' AND "permissionId" = '5705f902-3f27-41c9-b1fc-d12a70fa1c9e');
+
+
+alter table estimates add column "waterLevel" real NOT NULL default 0;
