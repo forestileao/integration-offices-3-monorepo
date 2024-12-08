@@ -26,13 +26,22 @@ SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
     host=os.environ.get("POSTGRES_HOST") or 'localhost',
     path=os.environ.get("POSTGRES_DB") or '/your_database',
 )
+
+ASYNC_SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
+    scheme="postgresql+asyncpg",  # Use asyncpg for async operations
+    user=os.environ.get("POSTGRES_USER") or 'your_username',
+    password=os.environ.get("POSTGRES_PASSWORD") or 'your_password',
+    host=os.environ.get("POSTGRES_HOST") or 'localhost',
+    path=os.environ.get("POSTGRES_DB") or '/your_database',
+)
+
 engine = create_engine(
     SQLALCHEMY_DATABASE_URI,
     pool_pre_ping=True,
 )
 
 async_engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URI,
+    ASYNC_SQLALCHEMY_DATABASE_URI,
     pool_pre_ping=True,
 )
 
