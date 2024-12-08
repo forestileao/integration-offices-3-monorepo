@@ -13,6 +13,7 @@ from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.future import select
 
 import uuid
 from pydantic import PostgresDsn
@@ -287,56 +288,59 @@ def list_projects(db: Session = Depends(get_db), current_user: dict = Depends(ge
 
     return projects
 
+
 @app.get("/projects/{project_id}/", response_model=dict)
 async def get_project(
     project_id: str,
     db: AsyncSession = Depends(get_async_db),
     current_user: dict = Depends(get_current_user)
 ):
-    role_user_data = await db.execute(
-        db.query(Project, RoleUser.roleId, Role.roleName)
+    # Use select() for asynchronous query
+    result = await db.execute(
+        select(Project, RoleUser.roleId, Role.roleName)
         .join(RoleUser, RoleUser.projectId == Project.id)
         .join(Role, Role.id == RoleUser.roleId)
         .filter(RoleUser.userId == current_user["sub"])
         .filter(Project.deleted == 0)
         .filter(Project.id == project_id)
     )
-    role_user_data = role_user_data.first()
+    role_user_data = result.first()
 
     if not role_user_data:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    chambers = await db.execute(
-        db.query(Chamber).filter(Chamber.projectId == project_id)
+    # Get chambers
+    chambers_result = await db.execute(
+        select(Chamber).filter(Chamber.projectId == project_id)
     )
-    chambers = chambers.scalars().all()
+    chambers = chambers_result.scalars().all()
 
     # Create tasks for parameters and estimates
     parameters_task = asyncio.create_task(
         db.execute(
-            db.query(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers]))
+            select(Parameter).filter(Parameter.chamberId.in_([c.id for c in chambers]))
         )
     )
     estimates_task = asyncio.create_task(
         db.execute(
-            db.query(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers]))
+            select(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers]))
         )
     )
 
     # Get results
-    parameters = await parameters_task
-    estimates = await estimates_task
+    parameters_result = await parameters_task
+    estimates_result = await estimates_task
 
+    # Extract the data from the results
     project, _role_id, role_name = role_user_data
     return {
         "id": project.id,
         "name": project.name,
         "role": role_name,
         "chambers": chambers,
-        "parameters": parameters.scalars().all(),
-        "estimates": estimates.scalars().all(),
+        "parameters": parameters_result.scalars().all(),
+        "estimates": estimates_result.scalars().all(),
     }
-
 
 @app.delete("/projects/{project_id}/", response_model=dict)
 def delete_project(project_id: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
