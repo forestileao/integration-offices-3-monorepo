@@ -159,7 +159,7 @@ export const getPhotos = async (chamberId: string) => {
 export const deleteProject = async (projectId: string) => {
   try {
     const response = await axios.delete(
-      `${API_URL}/projects/${projectId}`,
+      `${API_URL}/projects/${projectId}/`,
       AUTH_HEADER
     );
     return response.data;
