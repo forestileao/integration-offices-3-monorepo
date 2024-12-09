@@ -29,6 +29,10 @@ class AdcController:
 if __name__ == "__main__":
     adc = AdcController()
     while True:
-        print(f"ADC Value: {adc.read_value(0)}")
-        print(f"Voltage: {adc.read_voltage(0)}")
+        print(f"ADC Value: {adc.read_value(1)}")
+        print(f"Voltage: {adc.read_voltage(1)}")
         time.sleep(1)
+
+# soil moisture
+# min: 31198 # seco
+# max 15000 # molhado
