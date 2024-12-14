@@ -7,6 +7,7 @@ from adc import AdcController
 from http_api import HttpApi
 from photo import CameraController
 from timer_pkg import Timer
+from multiplexer import Multiplexer
 
 from time import sleep
 import datetime
@@ -26,6 +27,7 @@ chambers = [
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
+      'tempMuxChannel': 1,
       'parameters': {
         "temperatureRange": "17",
         "soilMoistureLowerLimit": 60,
@@ -46,6 +48,7 @@ chambers = [
       'waterLevelChannel': 2,
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
+      'tempMuxChannel': 2,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -74,21 +77,32 @@ END2=11
 class Firmware:
 
   def __init__(self):
+    self.multiplexer = Multiplexer()
     self.lamps_manager = LampsManager(chambers)
-    self.temp_humidity = TempHumidity(chambers)
+    self.temp_humidity = TempHumidity(chambers, self.multiplexer)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
-    self.adc = AdcController()
+    self.adc = AdcController(self.multiplexer)
     self.api = HttpApi()
     self.camera = CameraController()
     self.current_location = 0
+    self.stepper.move_to_initial_position()
 
 
   def get_parameters(self, chamber_id):
     return self.api.get_parameters(chamber_id)
 
+
+  def get_chamber(chamber_id):
+    for chamber in chambers:
+      if chamber['id'] == chamber_id:
+        return chamber
+    return None
+
   def take_photo(self, chamber_id):
-    led_status = chambers[chamber_id]['ledLightsActivated']
+    chamber = self.get_chamber(chamber_id)
+
+    led_status = chamber['ledLightsActivated']
 
     self.lamps_manager.turnOffLedLamp(chamber_id)
     sleep(0.1)
@@ -151,7 +165,8 @@ class Firmware:
 
   def control_soil_moisture(self, chamber_id, parameters):
       """Control soil moisture."""
-      channel = chambers[chamber_id]['soilMoistureChannel']
+      chamber = self.get_chamber(chamber_id)
+      channel = chamber['soilMoistureChannel']
       soil_moisture = self.adc.read_value(channel)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
@@ -165,8 +180,11 @@ class Firmware:
   def send_metrics(self, chamber_id):
     temperature = self.temp_humidity.read_temperature(chamber_id)
     humidity = self.temp_humidity.read_humidity(chamber_id)
-    soil_moisture = self.adc.read_value(chambers[chamber_id]['soilMoistureChannel'])
-    water_level = self.adc.read_value(chambers[chamber_id]['waterLevelChannel'])
+
+    chamber = self.get_chamber(chamber_id)
+
+    soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
+    water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = ((700 - soil_moisture)/500) * 100
     water_level = ((700 - water_level)/500) * 100
@@ -177,12 +195,15 @@ class Firmware:
         print("Failed to send metrics")
 
   def move_camera(self, chamber_id):
-    chamber_location = chambers[chamber_id]['chamberLocation']
+    chamber = self.get_chamber(chamber_id)
+    chamber_location = chamber['chamberLocation']
 
     if chamber_location > self.current_location:
       self.stepper.move_up(chamber_location - self.current_location)
     elif chamber_location < self.current_location:
       self.stepper.move_down(self.current_location - chamber_location)
+
+    self.current_location = chamber_location
 
 def main():
 

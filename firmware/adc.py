@@ -6,12 +6,13 @@ from adafruit_ads1x15.analog_in import AnalogIn
 
 
 class AdcController:
-    def __init__(self) -> None:
-        # Initialize the I2C interface
-        self.i2c = busio.I2C(board.SCL, board.SDA)
+    def __init__(self, multiplexer) -> None:
+        self.multiplexer = multiplexer
+
+        self.multiplexer.select_channel(0)
 
         # Create an ADS1115 object
-        self.ads = ADS.ADS1115(self.i2c)
+        self.ads = ADS.ADS1115(self.multiplexer.bus)
 
         # Define the analog input channel
         self.channels = [
@@ -22,8 +23,11 @@ class AdcController:
         ]
 
     def read_value(self, channel):
+        self.multiplexer.select_channel(0)
         return self.channels[channel].value
+
     def read_voltage(self, channel):
+        self.multiplexer.select_channel(0)
         return self.channels[channel].voltage
 
 if __name__ == "__main__":

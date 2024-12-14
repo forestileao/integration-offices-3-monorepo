@@ -3,7 +3,8 @@ from SDL_Pi_HDC1080 import SDL_Pi_HDC1080
 
 
 class TempHumidity:
-  def __init__(self, chambers=[]) -> None:
+  def __init__(self, chambers=[], multiplexer = None) -> None:
+    self.multiplexer = multiplexer
     self.chambers = chambers
     self.hdc1080 = SDL_Pi_HDC1080()
 
@@ -15,10 +16,22 @@ class TempHumidity:
 
 
   def read_temperature(self, chamber_id):
+    if self.multiplexer:
+      for chamber in self.chambers:
+        if chamber['id'] == chamber_id:
+          channel = chamber['tempMuxChannel']
+          self.multiplexer.select_channel(channel)
+
     return self.hdc1080.readTemperature()
 
 
   def read_humidity(self, chamber_id):
+    if self.multiplexer:
+      for chamber in self.chambers:
+        if chamber['id'] == chamber_id:
+          channel = chamber['tempMuxChannel']
+          self.multiplexer.select_channel(channel)
+
     return self.hdc1080.readHumidity()
 
   def turn_on_heater(self, chamber_id):
