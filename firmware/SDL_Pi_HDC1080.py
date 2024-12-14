@@ -76,39 +76,47 @@ class SDL_Pi_HDC1080:
         # public functions
 
         def readTemperature(self):
+                while True:
+                        try:
+                                s = [HDC1080_TEMPERATURE_REGISTER] # temp
+                                s2 = bytearray( s )
+                                HDC1080_fw.write( s2 )
+                                time.sleep(0.0625)              # From the data sheet
+
+                                data = HDC1080_fr.read(2) #read 2 byte temperature data
+                                buf = array.array('B', data)
+                                #print ( "Temp: %f 0x%X %X" % (  ((((buf[0]<<8) + (buf[1]))/65536.0)*165.0 ) - 40.0   ,buf[0],buf[1] )  )
 
 
-                s = [HDC1080_TEMPERATURE_REGISTER] # temp
-                s2 = bytearray( s )
-                HDC1080_fw.write( s2 )
-                time.sleep(0.0625)              # From the data sheet
-
-                data = HDC1080_fr.read(2) #read 2 byte temperature data
-                buf = array.array('B', data)
-                #print ( "Temp: %f 0x%X %X" % (  ((((buf[0]<<8) + (buf[1]))/65536.0)*165.0 ) - 40.0   ,buf[0],buf[1] )  )
-
-
-                # Convert the data
-                temp = (buf[0] * 256) + buf[1]
-                cTemp = (temp / 65536.0) * 165.0 - 40
-                return cTemp
+                                # Convert the data
+                                temp = (buf[0] * 256) + buf[1]
+                                cTemp = (temp / 65536.0) * 165.0 - 40
+                                return cTemp
+                        except:
+                                print("Error reading temperature")
+                                time.sleep(1)
 
 
         def readHumidity(self):
-                # Send humidity measurement command, 0x01(01)
-                time.sleep(0.015)               # From the data sheet
+                while True:
+                        try:
+                                # Send humidity measurement command, 0x01(01)
+                                time.sleep(0.015)               # From the data sheet
 
-                s = [HDC1080_HUMIDITY_REGISTER] # hum
-                s2 = bytearray( s )
-                HDC1080_fw.write( s2 )
-                time.sleep(0.0625)              # From the data sheet
+                                s = [HDC1080_HUMIDITY_REGISTER] # hum
+                                s2 = bytearray( s )
+                                HDC1080_fw.write( s2 )
+                                time.sleep(0.0625)              # From the data sheet
 
-                data = HDC1080_fr.read(2) #read 2 byte humidity data
-                buf = array.array('B', data)
-                #print ( "Humidity: %f 0x%X %X " % (  ((((buf[0]<<8) + (buf[1]))/65536.0)*100.0 ),  buf[0], buf[1] ) )
-                humidity = (buf[0] * 256) + buf[1]
-                humidity = (humidity / 65536.0) * 100.0
-                return humidity
+                                data = HDC1080_fr.read(2) #read 2 byte humidity data
+                                buf = array.array('B', data)
+                                #print ( "Humidity: %f 0x%X %X " % (  ((((buf[0]<<8) + (buf[1]))/65536.0)*100.0 ),  buf[0], buf[1] ) )
+                                humidity = (buf[0] * 256) + buf[1]
+                                humidity = (humidity / 65536.0) * 100.0
+                                return humidity
+                        except:
+                                print("Error reading humidity")
+                                time.sleep(1)
 
         def readConfigRegister(self):
                 # Read config register
@@ -149,7 +157,6 @@ class SDL_Pi_HDC1080:
                 time.sleep(0.015)               # From the data sheet
 
                 return
-
 
 
         def setHumidityResolution(self,resolution):
