@@ -8,6 +8,7 @@ from http_api import HttpApi
 from photo import CameraController
 from timer_pkg import Timer
 from multiplexer import Multiplexer
+from fans import FansController
 
 from time import sleep
 import datetime
@@ -28,6 +29,7 @@ chambers = [
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
+      'fanPin': 24,
       'parameters': {
         "temperatureRange": "17",
         "soilMoistureLowerLimit": 60,
@@ -49,6 +51,7 @@ chambers = [
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
       'tempMuxChannel': 2,
+      'fanPin': 9,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -87,6 +90,7 @@ class Firmware:
     self.camera = CameraController()
     self.current_location = 0
     self.stepper.move_to_initial_position()
+    self.fans_controller = FansController(chambers)
 
 
   def get_parameters(self, chamber_id):
@@ -145,6 +149,23 @@ class Firmware:
           for chamber in chambers:
               if chamber['id'] == chamber_Id:
                   chamber['ledLightsActivated'] = False
+
+
+  def control_ventilation(self, chamber_id, parameters):
+    # Get current time as a datetime object
+    current_time = datetime.now().time()
+
+    # Parse the ventilation schedule times
+    ventilation_schedule_lower_time = datetime.strptime(parameters['ventilationSchedule'].split('/')[0], '%H:%M').time()
+    ventilation_schedule_upper_time = datetime.strptime(parameters['ventilationSchedule'].split('/')[1], '%H:%M').time()
+
+    # Check if current time fallsstrptime within the ventilation schedule
+    if ventilation_schedule_lower_time <= current_time <= ventilation_schedule_upper_time:
+        self.fans_controller.turnOnFan(chamber_id)
+        print("Turning on fan for chamber:", chamber_id)
+    else:
+        self.fans_controller.turnOffFan(chamber_id)
+        print("Turning off fan for chamber:", chamber_id)
 
   def control_temperature(self, chamber_id, parameters):
     temperature = self.temp_humidity.read_temperature(chamber_id)
@@ -223,6 +244,9 @@ def main():
 
             # Control temperature
             firmware.control_temperature(chamber_id, parameters=chamber['parameters'])
+
+            # Control ventilation
+            firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
 
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
