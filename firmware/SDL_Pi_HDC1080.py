@@ -65,8 +65,15 @@ class SDL_Pi_HDC1080:
 
                 s = [HDC1080_CONFIGURATION_REGISTER,config>>8,0x00]
                 s2 = bytearray( s )
-                HDC1080_fw.write( s2 ) #sending config register bytes
-                time.sleep(0.015)               # From the data sheet
+
+                while True:
+                        try:
+                                HDC1080_fw.write( s2 ) #sending config register bytes
+                                time.sleep(0.015)               # From the data sheet
+                                break
+                        except:
+                                print("Error writing config register")
+                                time.sleep(0.3)
 
                 #       0x10(48)    Temperature, Humidity enabled, Resolultion = 14-bits, Heater off
                 #config = HDC1080_CONFIG_ACQUISITION_MODE
@@ -94,7 +101,7 @@ class SDL_Pi_HDC1080:
                                 return cTemp
                         except:
                                 print("Error reading temperature")
-                                time.sleep(1)
+                                time.sleep(0.3)
 
 
         def readHumidity(self):
@@ -116,7 +123,7 @@ class SDL_Pi_HDC1080:
                                 return humidity
                         except:
                                 print("Error reading humidity")
-                                time.sleep(1)
+                                time.sleep(0.3)
 
         def readConfigRegister(self):
                 # Read config register
