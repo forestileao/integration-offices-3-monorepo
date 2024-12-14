@@ -6,6 +6,12 @@ class TempHumidity:
   def __init__(self, chambers=[], multiplexer = None) -> None:
     self.multiplexer = multiplexer
     self.chambers = chambers
+
+    for chamber in chambers:
+      channel = chamber['tempMuxChannel']
+      self.multiplexer.select_channel(channel)
+
+
     self.hdc1080 = SDL_Pi_HDC1080()
 
     for chamber in chambers:

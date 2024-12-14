@@ -23,11 +23,11 @@ class AdcController:
         ]
 
     def read_value(self, channel):
-        self.multiplexer.select_channel(0)
+        self.multiplexer.select_channel(2)
         return self.channels[channel].value
 
     def read_voltage(self, channel):
-        self.multiplexer.select_channel(0)
+        self.multiplexer.select_channel(2)
         return self.channels[channel].voltage
 
 if __name__ == "__main__":
