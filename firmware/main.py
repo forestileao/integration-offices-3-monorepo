@@ -28,7 +28,7 @@ chambers = [
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
-      'tempMuxChannel': 1,
+      'tempMuxChannel': 0,
       'fanPin': 24,
       'parameters': {
         "temperatureRange": "17",
@@ -50,7 +50,7 @@ chambers = [
       'waterLevelChannel': 2,
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
-      'tempMuxChannel': 2,
+      'tempMuxChannel': 1,
       'fanPin': 9,
       'parameters': {
         "temperatureRange": "28",

@@ -1,5 +1,8 @@
 from RPi import GPIO
 from SDL_Pi_HDC1080 import SDL_Pi_HDC1080
+from multiplexer import Multiplexer
+
+from main import chambers
 
 
 class TempHumidity:
@@ -55,5 +58,10 @@ class TempHumidity:
         GPIO.output(chamber['peltierPin'], GPIO.LOW)
 
 if __name__ == '__main__':
-    temp = TempHumidity()
-    print(temp.read_temperature('aaa'))
+    multiplexer = Multiplexer()
+    temp = TempHumidity(chambers, multiplexer=multiplexer)
+
+
+    for chamber in chambers:
+      temp.read_temperature(chamber['id'])
+      temp.read_humidity(chamber['id'])

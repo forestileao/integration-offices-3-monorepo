@@ -9,7 +9,7 @@ class AdcController:
     def __init__(self, multiplexer) -> None:
         self.multiplexer = multiplexer
 
-        self.multiplexer.select_channel(0)
+        self.multiplexer.select_channel(2)
 
         # Create an ADS1115 object
         self.ads = ADS.ADS1115(self.multiplexer.bus)
