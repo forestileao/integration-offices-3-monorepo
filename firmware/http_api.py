@@ -47,3 +47,41 @@ class HttpApi:
         headers=self.headers
     )
     return response.status_code >= 200 and response.status_code < 300
+
+
+if __name__ == '__main__':
+  chambers = [
+    {
+      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
+      'parameters': {
+        "temperatureRange": "17",
+        "soilMoistureLowerLimit": 60,
+        "photoCaptureFrequency": "60",
+        "id": "b231822f-5e74-41ea-9678-0c61404fe6dd",
+        "lightingRoutine": "07:40/18:20",
+        "ventilationSchedule": "10:00/11:00"
+      }
+    },
+    {
+      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
+      'parameters': {
+        "temperatureRange": "28",
+        "soilMoistureLowerLimit": 60,
+        "photoCaptureFrequency": "60",
+        "id": "1e43809c-0daa-413f-ab18-988ef80e4af6",
+        "lightingRoutine": "07:40/18:20",
+        "ventilationSchedule": "10:00/11:00"
+        }
+    },
+  ]
+
+  api = HttpApi()
+
+
+
+  for chamber in chambers:
+    print(api.get_parameters(chamber['id']))
+    print(api.send_metrics(chamber['id'], 50, 25, 50, 50))
+
+    with open('example.jpg', 'rb') as f:
+      print(api.send_photo(chamber['id'], f.read()))
