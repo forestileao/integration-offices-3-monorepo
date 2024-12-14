@@ -112,5 +112,5 @@ if __name__ == '__main__':
 
 
   for chamber in chambers:
-    temp.read_temperature(chamber['id'])
-    temp.read_humidity(chamber['id'])
+    print(f"Temperature: {temp.read_temperature(chamber['id'])}")
+    print(f"Humidity: {temp.read_humidity(chamber['id'])}")
