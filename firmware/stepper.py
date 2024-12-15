@@ -100,6 +100,7 @@ class StepperController:
         """
         Clean up GPIO settings.
         """
+        GPIO.output(self.enable_pin, GPIO.HIGH)
         GPIO.cleanup()
 
     def check_end1(self):
@@ -132,15 +133,20 @@ if __name__ == "__main__":
     sleep(4)
     sc.move_to_initial_position()
 
-    while True:
-        usr_in = input("[w]Cima\n[s]Baixo\n[a]Esquerda\n[d]Direita\n")
-        if usr_in == 'w':
-            sc.move_up(200)
-        elif usr_in == 's':
-            sc.move_down(200)
-        elif usr_in == 'a':
-            sc.move_left(200)
-        elif usr_in == 'd':
-            sc.move_right(200)
-        elif usr_in == 'i':
-            sc.move_to_initial_position()
+    try:
+        while True:
+            usr_in = input("[w]Cima\n[s]Baixo\n[a]Esquerda\n[d]Direita\n")
+            if usr_in == 'w':
+                sc.move_up(200)
+            elif usr_in == 's':
+                sc.move_down(200)
+            elif usr_in == 'a':
+                sc.move_left(200)
+            elif usr_in == 'd':
+                sc.move_right(200)
+            elif usr_in == 'i':
+                sc.move_to_initial_position()
+    except KeyboardInterrupt:
+        sc.cleanup()
+        print("Exiting...")
+        exit(0)
