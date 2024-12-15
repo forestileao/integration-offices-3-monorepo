@@ -3,7 +3,7 @@ import time
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-
+from multiplexer import Multiplexer
 
 class AdcController:
     def __init__(self, multiplexer) -> None:
@@ -31,7 +31,8 @@ class AdcController:
         return self.channels[channel].voltage
 
 if __name__ == "__main__":
-    adc = AdcController()
+    multiplexer = Multiplexer()
+    adc = AdcController(multiplexer)
     while True:
         print(f"ADC Value: {adc.read_value(1)}")
         print(f"Voltage: {adc.read_voltage(1)}")
