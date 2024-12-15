@@ -23,7 +23,7 @@ chambers = [
       'ledPin': 27,
       'pumpPin': 18,
       'heaterPin': 22,
-      'peltierPin': 23,
+      'peltierPin': 4,
       'chamberLocation': 1200,
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
