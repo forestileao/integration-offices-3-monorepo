@@ -119,3 +119,7 @@ if __name__ == '__main__':
   for chamber in chambers:
     print(f"Temperature: {temp.read_temperature(chamber['id'])}")
     print(f"Humidity: {temp.read_humidity(chamber['id'])}")
+
+    temp.turn_on_peltier(chamber['id'])
+    sleep(2)
+    temp.turn_off_peltier(chamber['id'])
