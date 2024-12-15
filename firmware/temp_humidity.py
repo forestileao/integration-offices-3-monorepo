@@ -121,5 +121,9 @@ if __name__ == '__main__':
     print(f"Humidity: {temp.read_humidity(chamber['id'])}")
 
     temp.turn_on_peltier(chamber['id'])
-    sleep(2)
+
+
+  # turn off peltier
+  sleep(60)
+  for chamber in chambers:
     temp.turn_off_peltier(chamber['id'])
