@@ -3,16 +3,11 @@ import time
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-from multiplexer import Multiplexer
 
 class AdcController:
-    def __init__(self, multiplexer) -> None:
-        self.multiplexer = multiplexer
-
-        self.multiplexer.select_channel(2)
-
+    def __init__(self) -> None:
         # Create an ADS1115 object
-        self.ads = ADS.ADS1115(self.multiplexer.bus)
+        self.ads = ADS.ADS1115(busio.I2C(board.SCL, board.SDA))
 
         # Define the analog input channel
         self.channels = [
@@ -23,16 +18,13 @@ class AdcController:
         ]
 
     def read_value(self, channel):
-        self.multiplexer.select_channel(2)
         return self.channels[channel].value
 
     def read_voltage(self, channel):
-        self.multiplexer.select_channel(2)
         return self.channels[channel].voltage
 
 if __name__ == "__main__":
-    multiplexer = Multiplexer()
-    adc = AdcController(multiplexer)
+    adc = AdcController()
     while True:
         print(f"ADC Value: {adc.read_value(1)}")
         print(f"Voltage: {adc.read_voltage(1)}")

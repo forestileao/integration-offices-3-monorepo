@@ -7,7 +7,6 @@ from adc import AdcController
 from http_api import HttpApi
 from photo import CameraController
 from timer_pkg import Timer
-from multiplexer import Multiplexer
 from fans import FansController
 
 from time import sleep
@@ -82,12 +81,11 @@ END2=11
 class Firmware:
 
   def __init__(self):
-    self.multiplexer = Multiplexer()
     self.lamps_manager = LampsManager(chambers)
-    self.temp_humidity = TempHumidity(chambers, self.multiplexer)
+    self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
-    self.adc = AdcController(self.multiplexer)
+    self.adc = AdcController()
     self.api = HttpApi()
     self.camera = CameraController()
     self.current_location = 0

@@ -1,19 +1,10 @@
 from RPi import GPIO
 from SDL_Pi_HDC1080 import SDL_Pi_HDC1080
-from multiplexer import Multiplexer
 from time import sleep
 
 class TempHumidity:
-  def __init__(self, chambers=[], multiplexer = None) -> None:
-    self.multiplexer = multiplexer
+  def __init__(self, chambers=[]) -> None:
     self.chambers = chambers
-
-    for chamber in chambers:
-      channel = chamber['tempMuxChannel']
-      self.multiplexer.select_channel(channel)
-      break
-
-    sleep(0.2)
 
     self.hdc1080 = SDL_Pi_HDC1080()
 
@@ -25,24 +16,10 @@ class TempHumidity:
 
 
   def read_temperature(self, chamber_id):
-    sleep(0.2)
-    if self.multiplexer:
-      for chamber in self.chambers:
-        if chamber['id'] == chamber_id:
-          channel = chamber['tempMuxChannel']
-          self.multiplexer.select_channel(channel)
-
     return self.hdc1080.readTemperature()
 
 
   def read_humidity(self, chamber_id):
-    sleep(0.2)
-    if self.multiplexer:
-      for chamber in self.chambers:
-        if chamber['id'] == chamber_id:
-          channel = chamber['tempMuxChannel']
-          self.multiplexer.select_channel(channel)
-
     return self.hdc1080.readHumidity()
 
   def turn_on_heater(self, chamber_id):
@@ -112,8 +89,7 @@ if __name__ == '__main__':
         }
     },
   ]
-  multiplexer = Multiplexer()
-  temp = TempHumidity(chambers, multiplexer=multiplexer)
+  temp = TempHumidity(chambers)
 
 
   for chamber in chambers:
