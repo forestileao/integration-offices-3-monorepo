@@ -101,7 +101,6 @@ class StepperController:
         Clean up GPIO settings.
         """
         GPIO.output(self.enable_pin, GPIO.HIGH)
-        GPIO.cleanup()
 
     def check_end1(self):
         result = GPIO.input(self.end1_pin)
