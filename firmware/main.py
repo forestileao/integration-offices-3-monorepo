@@ -9,8 +9,9 @@ from photo import CameraController
 from timer_pkg import Timer
 from fans import FansController
 
+
 from time import sleep
-import datetime
+from datetime import datetime, timedelta
 
 GPIO.setmode(GPIO.BCM)
 
@@ -18,12 +19,12 @@ GPIO.setmode(GPIO.BCM)
 chambers = [
     {
       'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
-      'whitePin': 17,
-      'ledPin': 27,
+      'whitePin': 21,
+      'ledPin': 15,
       'pumpPin': 18,
       'heaterPin': 22,
       'peltierPin': 4,
-      'chamberLocation': 1200,
+      'chamberLocation': 4200,
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
@@ -41,12 +42,12 @@ chambers = [
     },
     {
       'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
-      'whitePin': 22,
-      'ledPin': 23,
+      'whitePin': 20,
+      'ledPin': 14,
       'pumpPin': 24,
       'heaterPin': 25,
       'peltierPin': 8,
-      'chamberLocation': 4200,
+      'chamberLocation': 1200,
       'waterLevelChannel': 2,
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
@@ -74,8 +75,8 @@ Y_DIR=7
 X_STP=6
 Y_STP=8
 
-END1=10
-END2=11
+END1=16
+END2=26
 
 
 class Firmware:
@@ -85,7 +86,7 @@ class Firmware:
     self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
-    self.adc = AdcController()
+    #self.adc = AdcController()
     self.api = HttpApi()
     self.camera = CameraController()
     self.current_location = 0
@@ -97,7 +98,7 @@ class Firmware:
     return self.api.get_parameters(chamber_id)
 
 
-  def get_chamber(chamber_id):
+  def get_chamber(self, chamber_id):
     for chamber in chambers:
       if chamber['id'] == chamber_id:
         return chamber
@@ -109,11 +110,11 @@ class Firmware:
     led_status = chamber['ledLightsActivated']
 
     self.lamps_manager.turnOffLedLamp(chamber_id)
-    sleep(0.1)
+    sleep(1)
     self.lamps_manager.turnOnWhiteLamp(chamber_id)
     img_bin = self.camera.capture_image()
+    sleep(1)
     self.lamps_manager.turnOffWhiteLamp(chamber_id)
-    sleep(0.1)
 
     if led_status:
       self.lamps_manager.turnOnLedLamp(chamber_id)
@@ -130,26 +131,43 @@ class Firmware:
 
   def control_lights(self, chamber_Id, parameters):
       # Get current time as a datetime object
-      current_time = datetime.now().time()
+      current_time = (datetime.now() - timedelta(hours=3)).time()
 
       # Parse the lighting routine times
       lighting_routine_lower_time = datetime.strptime(parameters['lightingRoutine'].split('/')[0], '%H:%M').time()
       lighting_routine_upper_time = datetime.strptime(parameters['lightingRoutine'].split('/')[1], '%H:%M').time()
+      print('current time:', current_time)
+      print('lower time:', lighting_routine_lower_time)
+      print('upper time:', lighting_routine_upper_time)
 
-      # Check if current time falls within the lighting routine
-      if lighting_routine_lower_time <= current_time <= lighting_routine_upper_time:
-          self.lamps_manager.turnOnLedLamp(chamber_Id)
-          print("Turning on LED lamp for chamber:", chamber_Id)
-          for chamber in chambers:
-              if chamber['id'] == chamber_Id:
-                  chamber['ledLightsActivated'] = True
-      else:
-          self.lamps_manager.turnOffLedLamp(chamber_Id)
-          print("Turning off LED lamp for chamber:", chamber_Id)
-          for chamber in chambers:
-              if chamber['id'] == chamber_Id:
-                  chamber['ledLightsActivated'] = False
-
+          # Determine if the current time falls within the lighting routine
+      if lighting_routine_upper_time < lighting_routine_lower_time:  # Spans past midnight
+          # Adjust times to account for "next day"
+          if current_time >= lighting_routine_lower_time or current_time <= lighting_routine_upper_time:
+            self.lamps_manager.turnOnLedLamp(chamber_Id)
+            print("Turning on LED lamp for chamber:", chamber_Id)
+            for chamber in chambers:
+                if chamber['id'] == chamber_Id:
+                    chamber['ledLightsActivated'] = True
+          else:
+            self.lamps_manager.turnOffLedLamp(chamber_Id)
+            print("Turning off LED lamp for chamber:", chamber_Id)
+            for chamber in chambers:
+                if chamber['id'] == chamber_Id:
+                    chamber['ledLightsActivated'] = False
+      else:  # Same day
+          if lighting_routine_lower_time <= current_time <= lighting_routine_upper_time:
+            self.lamps_manager.turnOnLedLamp(chamber_Id)
+            print("Turning on LED lamp for chamber:", chamber_Id)
+            for chamber in chambers:
+                if chamber['id'] == chamber_Id:
+                    chamber['ledLightsActivated'] = True
+          else:
+            self.lamps_manager.turnOffLedLamp(chamber_Id)
+            print("Turning off LED lamp for chamber:", chamber_Id)
+            for chamber in chambers:
+                if chamber['id'] == chamber_Id:
+                    chamber['ledLightsActivated'] = False
 
   def control_ventilation(self, chamber_id, parameters):
     # Get current time as a datetime object
@@ -168,7 +186,7 @@ class Firmware:
         print("Turning off fan for chamber:", chamber_id)
 
   def control_temperature(self, chamber_id, parameters):
-    temperature = self.temp_humidity.read_temperature(chamber_id)
+    temperature = 50 # self.temp_humidity.read_temperature(chamber_id)
     print("Temperature for chamber", chamber_id, temperature)
 
     if temperature < int(parameters['temperatureRange']):
@@ -188,7 +206,7 @@ class Firmware:
       """Control soil moisture."""
       chamber = self.get_chamber(chamber_id)
       channel = chamber['soilMoistureChannel']
-      soil_moisture = self.adc.read_value(channel)
+      soil_moisture = 50#self.adc.read_value(channel)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
       if soil_moisture < desired_soil_moisture:
@@ -199,13 +217,13 @@ class Firmware:
           self.pump_controller.set_pump_speed(chamber_id, 0)
 
   def send_metrics(self, chamber_id):
-    temperature = self.temp_humidity.read_temperature(chamber_id)
-    humidity = self.temp_humidity.read_humidity(chamber_id)
+    temperature = 20 # self.temp_humidity.read_temperature(chamber_id)
+    humidity = 60 # self.temp_humidity.read_humidity(chamber_id)
 
     chamber = self.get_chamber(chamber_id)
 
-    soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
-    water_level = self.adc.read_value(chamber['waterLevelChannel'])
+    soil_moisture = 50 # self.adc.read_value(chamber['soilMoistureChannel'])
+    water_level = 50 # self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = ((700 - soil_moisture)/500) * 100
     water_level = ((700 - water_level)/500) * 100
@@ -251,12 +269,8 @@ def main():
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
-            # Send metrics periodically
-            if metricsTimer.elapsed_time() > 60:
-                firmware.sendMetrics(chamber_id)
-                metricsTimer.reset()
-
-            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+            if True or int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+                firmware.send_metrics(chamber_id)
                 firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)

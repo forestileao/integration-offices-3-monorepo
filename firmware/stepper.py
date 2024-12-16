@@ -31,12 +31,13 @@ class StepperController:
         GPIO.setup(self.end1_pin, GPIO.IN,  pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.end2_pin, GPIO.IN,  pull_up_down=GPIO.PUD_DOWN)
 
-        # Enable motor driver
-        GPIO.output(self.enable_pin, GPIO.LOW)
+        # Disanlr when idle motor driver
+        GPIO.output(self.enable_pin, GPIO.HIGH)
 
     def move_to_initial_position(self):
         GPIO.output(self.x_dir_pin, True)
         GPIO.output(self.y_dir_pin, False)
+        GPIO.output(self.enable_pin, GPIO.LOW)
 
         while not self.check_end1():
             GPIO.output(self.x_step_pin, GPIO.HIGH)
@@ -47,6 +48,8 @@ class StepperController:
             time.sleep(self.delay_time)
             GPIO.output(self.y_step_pin, GPIO.LOW)
             time.sleep(self.delay_time)
+        GPIO.output(self.enable_pin, GPIO.HIGH)
+
 
     def move_steps(self, x_dir, y_dir, steps):
         """
@@ -60,6 +63,8 @@ class StepperController:
         GPIO.output(self.y_dir_pin, y_dir)
         is_move_down = x_dir and not y_dir
         is_move_right = not x_dir and not y_dir
+
+        GPIO.output(self.enable_pin, GPIO.LOW)
 
         for _ in range(steps):
 
@@ -79,6 +84,7 @@ class StepperController:
             time.sleep(self.delay_time)
             GPIO.output(self.y_step_pin, GPIO.LOW)
             time.sleep(self.delay_time)
+        GPIO.output(self.enable_pin, GPIO.HIGH)
 
     def move_up(self, steps):
         print(f"Moving up with {steps} steps.")
@@ -108,7 +114,6 @@ class StepperController:
         if result == GPIO.HIGH:
             sleep(300 / 1_000_000)
             result = GPIO.input(self.end1_pin)
-        print(result)
         return result == GPIO.HIGH
 
     def check_end2(self):
@@ -116,7 +121,6 @@ class StepperController:
         if result == GPIO.HIGH:
             sleep(300 / 1_000_000)
             result = GPIO.input(self.end2_pin)
-        print(result)
         return result == GPIO.HIGH
 
 if __name__ == "__main__":
