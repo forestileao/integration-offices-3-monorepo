@@ -20,6 +20,8 @@ COPY . .
 # Ensure that the schema.sql file is present inside the container
 RUN if [ -f database.sql ]; then echo "Schema file found."; else echo "Schema file not found."; fi
 
+VOLUME /app/uploads
+
 # Expose the port that FastAPI will run on
 EXPOSE 8000
 
