@@ -24,8 +24,19 @@ class PumpController:
 
 # Example usage
 if __name__ == "__main__":
+
     GPIO.setmode(GPIO.BCM)
-    pump = PumpController([{'id': '123123', 'pumpPin': 23}])
-    pump.set_pump_speed('123123',50)
-    sleep(3)
-    pump.set_pump_speed('123123', 0)
+    speed = 20 
+    
+    chamber_id_1 = '1'
+    chamber_id_2 = '2'
+
+    chambers = [
+        {'id': chamber_id_2 , 'pumpPin': 18},
+        {'id': chamber_id_2 , 'pumpPin': 24}
+    ]
+
+    pump = PumpController(chambers)
+    pump.set_pump_speed(chamber_id_2, 25)
+
+    sleep(100000)
