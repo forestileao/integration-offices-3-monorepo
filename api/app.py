@@ -323,7 +323,9 @@ async def get_project(
     )
     estimates_task = asyncio.create_task(
         db.execute(
-            select(Estimate).filter(Estimate.chamberId.in_([c.id for c in chambers]))
+            select(Estimate) \
+                .filter(Estimate.chamberId.in_([c.id for c in chambers])) \
+                .filter(Estimate.leafCount != 99999)
         )
     )
 
@@ -417,7 +419,7 @@ def create_parameter(chamberId: str = Body(), soilMoistureLowerLimit: float = Bo
         current_parameter.temperatureRange = temperatureRange
         current_parameter.ventilationSchedule = ventilationSchedule
         current_parameter.photoCaptureFrequency = photoCaptureFrequency
-        db.commit()
+        db.commit();
         return {"id": current_parameter.id, "chamberId": current_parameter.chamberId}
 
     parameter = Parameter(

@@ -334,7 +334,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.greenArea || "- "} cm²
+                      {mainEstimate?.greenArea?.toFixed(2) || "- "} cm²
                     </div>
                   </CardContent>
                 </Card>
