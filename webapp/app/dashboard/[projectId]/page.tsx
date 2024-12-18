@@ -163,6 +163,13 @@ export default function PlantMonitoringDashboard() {
       setProject(data);
       setSelectedChamber(data.chambers[0].id);
     });
+
+    setTimeout(() => {
+      getProject((projectId as string) || "").then((data) => {
+        console.log(data);
+        setProject(data);
+      });
+    }, 10_000);
   }, []);
 
   useEffect(() => {
