@@ -42,8 +42,8 @@ chambers = [
     },
     {
       'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
-      'whitePin': 20,
-      'ledPin': 14,
+      'whitePin': 14,
+      'ledPin': 20,
       'pumpPin': 24,
       'heaterPin': 25,
       'peltierPin': 8,
