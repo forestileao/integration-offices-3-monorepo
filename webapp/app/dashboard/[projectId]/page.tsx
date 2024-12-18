@@ -181,15 +181,6 @@ export default function PlantMonitoringDashboard() {
     };
   }, []);
 
-  const loopGetPhotos = useCallback(() => {
-    return setTimeout(() => {
-      getPhotos(selectedChamber).then((data) => {
-        setPhotos(data);
-      });
-      loopGetPhotos();
-    }, 10_000);
-  }, [selectedChamber]);
-
   useEffect(() => {
     const currentChamberParams = project.parameters?.find(
       (param: Parameter) => param.chamberId === selectedChamber
@@ -202,12 +193,6 @@ export default function PlantMonitoringDashboard() {
     getPhotos(selectedChamber).then((data) => {
       setPhotos(data);
     });
-
-    const timeout = loopGetPhotos();
-
-    return () => {
-      clearTimeout(timeout);
-    };
   }, [selectedChamber]);
 
   if (!AUTH_HEADER.headers.Authorization) {
