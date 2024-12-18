@@ -6,7 +6,7 @@ class TempHumidity:
   def __init__(self, chambers=[]) -> None:
     self.chambers = chambers
 
-    self.hdc1080 = None# SDL_Pi_HDC1080()
+    self.hdc1080 = SDL_Pi_HDC1080()
 
     for chamber in chambers:
       GPIO.setup(chamber['heaterPin'], GPIO.OUT)
