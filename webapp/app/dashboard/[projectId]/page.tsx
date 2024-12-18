@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Home,
   LogOut,
@@ -157,6 +157,16 @@ export default function PlantMonitoringDashboard() {
     });
   };
 
+  const loopGetProject = useCallback(() => {
+    return setTimeout(() => {
+      getProject((projectId as string) || "").then((data) => {
+        console.log(data);
+        setProject(data);
+      });
+      loopGetProject();
+    }, 10_000);
+  }, [projectId]);
+
   useEffect(() => {
     getProject((projectId as string) || "").then((data) => {
       console.log(data);
@@ -164,13 +174,21 @@ export default function PlantMonitoringDashboard() {
       setSelectedChamber(data.chambers[0].id);
     });
 
-    setTimeout(() => {
-      getProject((projectId as string) || "").then((data) => {
-        console.log(data);
-        setProject(data);
-      });
-    }, 10_000);
+    const timeout = loopGetProject();
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
+
+  const loopGetPhotos = useCallback(() => {
+    return setTimeout(() => {
+      getPhotos(selectedChamber).then((data) => {
+        setPhotos(data);
+      });
+      loopGetPhotos();
+    }, 10_000);
+  }, [selectedChamber]);
 
   useEffect(() => {
     const currentChamberParams = project.parameters?.find(
@@ -184,6 +202,12 @@ export default function PlantMonitoringDashboard() {
     getPhotos(selectedChamber).then((data) => {
       setPhotos(data);
     });
+
+    const timeout = loopGetPhotos();
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [selectedChamber]);
 
   if (!AUTH_HEADER.headers.Authorization) {
