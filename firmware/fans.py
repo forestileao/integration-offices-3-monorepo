@@ -31,7 +31,7 @@ class FansController:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['fanPin'], GPIO.LOW)
         pwm = self.pwms[chamber_id]
-        pwm.ChangeDutyCycle(12.5)
+        pwm.ChangeDutyCycle(6.5)
         sleep(1)
         pwm.ChangeDutyCycle(0)
         break
@@ -86,15 +86,14 @@ if __name__ == '__main__':
         "ventilationSchedule": "10:00/11:00"
         }
     },]
-    
+
     fans = FansController(chambers)
     while True:
-      
+
       #fans.turnOnFan(chambers[0]['id'])
       fans.turnOnFan(chambers[1]['id'])
       sleep(3)
       #fans.turnOffFan(chambers[0]['id'])
       fans.turnOffFan(chambers[1]['id'])
-    
-      sleep(3)
 
+      sleep(3)

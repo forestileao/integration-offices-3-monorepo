@@ -26,8 +26,8 @@ class PumpController:
 if __name__ == "__main__":
 
     GPIO.setmode(GPIO.BCM)
-    speed = 20 
-    
+    speed = 20
+
     chamber_id_1 = '1'
     chamber_id_2 = '2'
 

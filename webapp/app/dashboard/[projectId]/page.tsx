@@ -445,6 +445,44 @@ export default function PlantMonitoringDashboard() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="light-schedule">Ventilation Schedule</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="vent-start"
+                        type="time"
+                        readOnly={project.role === "viewer"}
+                        disabled={project.role === "viewer"}
+                        placeholder="On Time"
+                        value={parameters?.ventilationSchedule?.split("/")[0]}
+                        onChange={(e) => {
+                          setParameters({
+                            ...parameters,
+                            ventilationSchedule: `${e.target.value}/${
+                              parameters?.ventilationSchedule?.split("/")[1]
+                            }`,
+                          });
+                        }}
+                      />
+                      <Input
+                        id="vent-off"
+                        type="time"
+                        readOnly={project.role === "viewer"}
+                        disabled={project.role === "viewer"}
+                        placeholder="Off Time"
+                        value={parameters?.ventilationSchedule?.split("/")[1]}
+                        onChange={(e) => {
+                          setParameters({
+                            ...parameters,
+                            ventilationSchedule: `${
+                              parameters?.ventilationSchedule?.split("/")[0]
+                            }/${e.target.value}`,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="temperature">Temperature (°C)</Label>
                     <Select
                       disabled={project.role === "viewer"}

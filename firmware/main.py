@@ -8,7 +8,7 @@ from http_api import HttpApi
 from photo import CameraController
 from timer_pkg import Timer
 from fans import FansController
-
+from random import random
 
 from time import sleep
 from datetime import datetime, timedelta
@@ -186,7 +186,7 @@ class Firmware:
         print("Turning off fan for chamber:", chamber_id)
 
   def control_temperature(self, chamber_id, parameters):
-    temperature = 50 # self.temp_humidity.read_temperature(chamber_id)
+    temperature = self.temp_humidity.read_temperature(chamber_id)
     print("Temperature for chamber", chamber_id, temperature)
 
     if temperature < int(parameters['temperatureRange']):
@@ -217,13 +217,13 @@ class Firmware:
           self.pump_controller.set_pump_speed(chamber_id, 0)
 
   def send_metrics(self, chamber_id):
-    temperature = 20 # self.temp_humidity.read_temperature(chamber_id)
-    humidity = 60 # self.temp_humidity.read_humidity(chamber_id)
+    temperature = self.temp_humidity.read_temperature(chamber_id)
+    humidity = self.temp_humidity.read_humidity(chamber_id)
 
     chamber = self.get_chamber(chamber_id)
 
-    soil_moisture = 50 # self.adc.read_value(chamber['soilMoistureChannel'])
-    water_level = 50 # self.adc.read_value(chamber['waterLevelChannel'])
+    soil_moisture = 50 + random() * 3 # self.adc.read_value(chamber['soilMoistureChannel'])
+    water_level = 50 + random() * 3 # self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = ((700 - soil_moisture)/500) * 100
     water_level = ((700 - water_level)/500) * 100
