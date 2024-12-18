@@ -285,7 +285,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.temperature || "- "}°C
+                      {mainEstimate?.temperature?.toFixed(2) || "- "}°C
                     </div>
                   </CardContent>
                 </Card>
@@ -298,7 +298,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.humidity || "- "}%
+                      {mainEstimate?.humidity?.toFixed(2) || "- "}%
                     </div>
                   </CardContent>
                 </Card>
@@ -311,7 +311,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.soilMoisture || "- "}%
+                      {mainEstimate?.soilMoisture?.toFixed(2) || "- "}%
                     </div>
                   </CardContent>
                 </Card>
