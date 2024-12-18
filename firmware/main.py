@@ -225,8 +225,8 @@ class Firmware:
     soil_moisture = 50 + random() * 3 # self.adc.read_value(chamber['soilMoistureChannel'])
     water_level = 50 + random() * 3 # self.adc.read_value(chamber['waterLevelChannel'])
 
-    soil_moisture = ((700 - soil_moisture)/500) * 100
-    water_level = ((700 - water_level)/500) * 100
+    #soil_moisture = ((700 - soil_moisture)/500) * 100
+    #water_level = ((700 - water_level)/500) * 100
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level):
         print("Metrics sent successfully")
