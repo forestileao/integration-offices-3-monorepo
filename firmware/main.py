@@ -112,6 +112,7 @@ class Firmware:
     self.lamps_manager.turnOffLedLamp(chamber_id)
     sleep(1)
     self.lamps_manager.turnOnWhiteLamp(chamber_id)
+    sleep(2)
     img_bin = self.camera.capture_image()
     sleep(1)
     self.lamps_manager.turnOffWhiteLamp(chamber_id)
