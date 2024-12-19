@@ -9,6 +9,7 @@ from photo import CameraController
 from timer_pkg import Timer
 from fans import FansController
 from random import random
+from multiplexer import Multiplexer
 
 from time import sleep
 from datetime import datetime, timedelta
@@ -82,11 +83,12 @@ END2=26
 class Firmware:
 
   def __init__(self):
+    self.multi = Multiplexer()
     self.lamps_manager = LampsManager(chambers)
     self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
-    #self.adc = AdcController()
+    #self.adc = AdcController(self.multi.bus)
     self.api = HttpApi()
     self.camera = CameraController()
     self.current_location = 0
@@ -187,6 +189,10 @@ class Firmware:
         print("Turning off fan for chamber:", chamber_id)
 
   def control_temperature(self, chamber_id, parameters):
+    chamber = self.get_chamber(chamber_id)
+
+    self.multi.select_channel(chamber['tempMuxChannel'])
+
     temperature = self.temp_humidity.read_temperature(chamber_id)
     print("Temperature for chamber", chamber_id, temperature)
 
@@ -218,14 +224,16 @@ class Firmware:
           self.pump_controller.set_pump_speed(chamber_id, 0)
 
   def send_metrics(self, chamber_id):
+    chamber = self.get_chamber(chamber_id)
+    self.multi.select_channel(chamber['tempMuxChannel'])
+
     temperature = self.temp_humidity.read_temperature(chamber_id)
     humidity = self.temp_humidity.read_humidity(chamber_id)
-
-    chamber = self.get_chamber(chamber_id)
 
     soil_moisture = 50 + random() * 3 # self.adc.read_value(chamber['soilMoistureChannel'])
     water_level = 50 + random() * 3 # self.adc.read_value(chamber['waterLevelChannel'])
 
+    #self.multi.select_channel(2)
     #soil_moisture = ((700 - soil_moisture)/500) * 100
     #water_level = ((700 - water_level)/500) * 100
 

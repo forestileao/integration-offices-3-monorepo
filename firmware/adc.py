@@ -5,9 +5,9 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
 class AdcController:
-    def __init__(self) -> None:
+    def __init__(self, i2cBus = None) -> None:
         # Create an ADS1115 object
-        self.ads = ADS.ADS1115(busio.I2C(board.SCL, board.SDA))
+        self.ads = ADS.ADS1115(busio.I2C(board.SCL, board.SDA) if i2cBus is None else i2cBus)
 
         # Define the analog input channel
         self.channels = [
