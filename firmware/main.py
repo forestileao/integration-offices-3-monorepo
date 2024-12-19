@@ -19,13 +19,13 @@ GPIO.setmode(GPIO.BCM)
 
 chambers = [
     {
-      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
+      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 18,
       'heaterPin': 22,
       'peltierPin': 4,
-      'chamberLocation': 1200,
+      'chamberLocation': 4200,
       'waterLevelChannel': 0,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
@@ -42,13 +42,13 @@ chambers = [
       }
     },
     {
-      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
+      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
       'whitePin': 14,
       'ledPin': 20,
       'pumpPin': 24,
       'heaterPin': 25,
       'peltierPin': 17,
-      'chamberLocation': 4200,
+      'chamberLocation': 1200,
       'waterLevelChannel': 2,
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
