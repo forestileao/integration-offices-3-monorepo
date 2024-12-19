@@ -42,7 +42,7 @@ class HttpApi:
         'photo': ('photo.jpg', img_bin, 'image/jpeg')  # Specify filename and content type
     }
     response = post(
-        self.base_url + '/photos/?chamberId=' + chamber_id,
+        self.base_url + f'/photos/{chamber_id}/',
         files=files,
         headers=self.headers
     )

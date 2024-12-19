@@ -473,7 +473,7 @@ def get_photo(photo_id: str, db: Session = Depends(get_db)):
     return StreamingResponse(img_file, media_type="image/jpeg")
 
 
-@app.post("/photos/", response_model=dict)
+@app.post("/photos/{chamberId}/", response_model=dict)
 def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     binary = photo.file.read()
     marked_binary, green_area, leaf_count = apply_watershed(binary)
