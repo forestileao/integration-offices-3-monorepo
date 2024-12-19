@@ -1,27 +1,50 @@
 import cv2
+import time  # Import the time module for introducing a delay
+
+def capture_picture(cap):
+    # Introduce a small delay to let the camera initialize
+    time.sleep(2)  # Adjust the delay as needed
+    
+    i = 0
+    while i != 10:
+        _, frame = cap.read()  # Capture frames from the webcam
+        if not _:
+            return None  # Return None if frame capture failed
+        i += 1
+    
+    # Return the 10th frame
+    return frame
 
 class CameraController:
-  def __init__(self) -> None:
-    self.video_capture = cv2.VideoCapture(0)
+    def __init__(self) -> None:
+        # Initialize the video capture object
+        self.video_capture = cv2.VideoCapture(0)
+        
+        # Introduce a small delay to allow the camera to initialize properly
+        time.sleep(2)  # Adjust the delay as needed (e.g., 2 seconds)
 
+    def capture_image(self, savePhoto=False):
+        # Capture the 10th frame
+        video_frame = capture_picture(self.video_capture)
+        if video_frame is None:
+            return None  # Return None if frame capture failed
+        
+        # Convert the captured frame to JPEG binary
+        _, jpeg_binary = cv2.imencode('.jpg', video_frame)
 
-  def capture_image(self, savePhoto=False):
-    result, video_frame = self.video_capture.read()  # read frames from the video
-    if result is False:
-        return None
+        if savePhoto:
+            # Save the captured image
+            cv2.imwrite('test.jpeg', video_frame)
 
-    _, jpeg_binary = cv2.imencode('.jpg', video_frame)
+        print("Captured image into JPEG binary")
 
-    if savePhoto:
-      cv2.imwrite('test.jpeg', video_frame)
-
-
-    print("Captured image into JPEG binary")
-
-    return jpeg_binary.tobytes()
+        return jpeg_binary.tobytes()
 
 
 if __name__ == '__main__':
-  controller = CameraController()
+    # Create a CameraController instance
+    controller = CameraController()
 
-  controller.capture_image(True)
+    # Capture the 10th frame and save it
+    controller.capture_image(True)
+

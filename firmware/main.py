@@ -114,9 +114,9 @@ class Firmware:
     self.lamps_manager.turnOffLedLamp(chamber_id)
     sleep(1)
     self.lamps_manager.turnOnWhiteLamp(chamber_id)
-    sleep(2)
+    sleep(4)
     img_bin = self.camera.capture_image()
-    sleep(1)
+    sleep(2)
     self.lamps_manager.turnOffWhiteLamp(chamber_id)
 
     if led_status:
@@ -197,16 +197,16 @@ class Firmware:
     print("Temperature for chamber", chamber_id, temperature)
 
     if temperature < int(parameters['temperatureRange']):
-        self.temp_humidity.turn_on_heater(chamber_id)
-        self.temp_humidity.turn_off_peltier(chamber_id)
+        #self.temp_humidity.turn_on_heater(chamber_id)
+        #self.temp_humidity.turn_off_peltier(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
     elif temperature > int(parameters['temperatureRange']):
-        self.temp_humidity.turn_off_heater(chamber_id)
-        self.temp_humidity.turn_on_peltier(chamber_id)
+        #self.temp_humidity.turn_off_heater(chamber_id)
+        #self.temp_humidity.turn_on_peltier(chamber_id)
         print("Turning on peltier for chamber: ", chamber_id)
     else:
-        self.temp_humidity.turn_off_heater(chamber_id)
-        self.temp_humidity.turn_off_peltier(chamber_id)
+        #self.temp_humidity.turn_off_heater(chamber_id)
+        #self.temp_humidity.turn_off_peltier(chamber_id)
         print("Turning off heater and peltier for chamber: ", chamber_id)
 
   def control_soil_moisture(self, chamber_id, parameters):
@@ -218,10 +218,10 @@ class Firmware:
 
       if soil_moisture < desired_soil_moisture:
           print("Turning on pump for chamber: ", chamber_id)
-          self.pump_controller.set_pump_speed(chamber_id, 50)
-          sleep(3)
+         # self.pump_controller.set_pump_speed(chamber_id, 50)
+         # sleep(3)
           print("Turning off pump for chamber: ", chamber_id)
-          self.pump_controller.set_pump_speed(chamber_id, 0)
+         # self.pump_controller.set_pump_speed(chamber_id, 0)
 
   def send_metrics(self, chamber_id):
     chamber = self.get_chamber(chamber_id)
@@ -286,7 +286,7 @@ def main():
                 photoTimer.reset()
 
             # Sleep to avoid tight loop, adjust the sleep time as needed
-            sleep(10)  # Adjust sleep time (10 seconds) for the loop
+            #sleep(10)  # Adjust sleep time (10 seconds) for the loop
 
 
 if __name__ == '__main__':
