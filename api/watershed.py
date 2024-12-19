@@ -9,7 +9,7 @@ def remove_white_from_image(img):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # Define the range for white colors
-    lower_white = np.array([20,20,20], dtype=np.uint8)
+    lower_white = np.array([20,80,80], dtype=np.uint8)
     upper_white = np.array([255, 255, 255], dtype=np.uint8)
 
     # Create a mask for white colors
@@ -22,7 +22,7 @@ def remove_white_from_image(img):
 
 def extract_green(img):
   hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-  greenMask = cv2.inRange(hsv, (26, 80, 60), (105, 250, 255))
+  greenMask = cv2.inRange(hsv, (26, 65, 100), (105, 250, 255))
 
   img[greenMask == 255] = (0, 255, 0)
 
