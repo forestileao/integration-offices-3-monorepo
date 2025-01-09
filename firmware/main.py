@@ -85,9 +85,12 @@ class Firmware:
   def __init__(self):
     self.multi = Multiplexer()
     self.lamps_manager = LampsManager(chambers)
+
+    self.multi.select_channel(0)
     self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
+    self.multi.select_channel(2)
     self.adc = AdcController(self.multi.bus)
     self.api = HttpApi()
     self.camera = CameraController()
