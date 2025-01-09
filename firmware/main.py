@@ -216,6 +216,7 @@ class Firmware:
       """Control soil moisture."""
       chamber = self.get_chamber(chamber_id)
       channel = chamber['soilMoistureChannel']
+      self.multi.select_channel(2)
       soil_moisture = self.adc.read_value(channel)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
