@@ -19,7 +19,7 @@ GPIO.setmode(GPIO.BCM)
 
 chambers = [
     {
-      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
+      'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 18,
@@ -42,7 +42,7 @@ chambers = [
       }
     },
     {
-      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
+      'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
       'whitePin': 14,
       'ledPin': 20,
       'pumpPin': 24,
@@ -88,7 +88,7 @@ class Firmware:
     self.temp_humidity = TempHumidity(chambers)
     self.pump_controller = PumpController(chambers)
     self.stepper = StepperController(X_DIR, X_STP, Y_DIR, Y_STP, EN, END1, END2)
-    #self.adc = AdcController(self.multi.bus)
+    self.adc = AdcController(self.multi.bus)
     self.api = HttpApi()
     self.camera = CameraController()
     self.current_location = 0
@@ -213,7 +213,7 @@ class Firmware:
       """Control soil moisture."""
       chamber = self.get_chamber(chamber_id)
       channel = chamber['soilMoistureChannel']
-      soil_moisture = 50#self.adc.read_value(channel)
+      soil_moisture = self.adc.read_value(channel)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
       if soil_moisture < desired_soil_moisture:
@@ -230,12 +230,13 @@ class Firmware:
     temperature = self.temp_humidity.read_temperature(chamber_id)
     humidity = self.temp_humidity.read_humidity(chamber_id)
 
-    soil_moisture = 50 + random() * 3 # self.adc.read_value(chamber['soilMoistureChannel'])
-    water_level = 50 + random() * 3 # self.adc.read_value(chamber['waterLevelChannel'])
+    self.multi.select_channel(2)
 
-    #self.multi.select_channel(2)
-    #soil_moisture = ((700 - soil_moisture)/500) * 100
-    #water_level = ((700 - water_level)/500) * 100
+    soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
+    water_level = self.adc.read_value(chamber['waterLevelChannel'])
+
+    soil_moisture = (soil_moisture - 15000) / (31198 - 15000) * 100
+    water_level = ((700 - water_level)/500) * 100
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level):
         print("Metrics sent successfully")

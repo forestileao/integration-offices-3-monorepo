@@ -126,6 +126,46 @@ export default function PlantMonitoringDashboard() {
         ])),
   ];
 
+  const temperatureData = [
+    ["x", "Temperature"],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.temperature,
+        ])),
+  ];
+
+  const humidityData = [
+    ["x", "Humidity"],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.humidity,
+        ])),
+  ];
+
+  const soilMoistureData = [
+    ["x", "Soil Moisture"],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.soilMoisture,
+        ])),
+  ];
+
+  const lightStateData = [
+    ["x", "Light State"],
+    ...(estimates.length == 0
+      ? [[new Date().toLocaleString(), 0]]
+      : estimates.map((estimate: Estimate) => [
+          new Date(estimate.estimateDate).toLocaleString(),
+          1,
+        ])),
+  ];
+
   const greenAreaOptions = {
     title: "Green Area Over Time",
     hAxis: { title: "Time" },
@@ -138,6 +178,38 @@ export default function PlantMonitoringDashboard() {
     title: "Visible Leaves Over Time",
     hAxis: { title: "Time" },
     vAxis: { title: "Visible Leaves" },
+    legend: "none",
+    colors: ["#ff0000"],
+  };
+
+  const temperatureOptions = {
+    title: "Temperature Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Temperature (°C)" },
+    legend: "none",
+    colors: ["#ff0000"],
+  };
+
+  const humidityOptions = {
+    title: "Humidity Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Humidity (%)" },
+    legend: "none",
+    colors: ["#ff0000"],
+  };
+
+  const soilMoistureOptions = {
+    title: "Soil Moisture Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Soil Moisture (%)" },
+    legend: "none",
+    colors: ["#ff0000"],
+  };
+
+  const lightStateOptions = {
+    title: "Light State Over Time",
+    hAxis: { title: "Time" },
+    vAxis: { title: "Light State" },
     legend: "none",
     colors: ["#ff0000"],
   };
@@ -375,6 +447,34 @@ export default function PlantMonitoringDashboard() {
                     height="400px"
                     data={visibleLeavesData}
                     options={visibleLeavesOptions}
+                  />
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={temperatureData}
+                    options={temperatureOptions}
+                  />
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={humidityData}
+                    options={humidityOptions}
+                  />
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={soilMoistureData}
+                    options={soilMoistureOptions}
+                  />
+                  <Chart
+                    chartType="LineChart"
+                    width="100%"
+                    height="400px"
+                    data={lightStateData}
+                    options={lightStateOptions}
                   />
                 </CardContent>
               </Card>
