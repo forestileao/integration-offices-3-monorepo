@@ -19,7 +19,7 @@ GPIO.setmode(GPIO.BCM)
 
 chambers = [
     {
-      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
+      'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 18,
@@ -42,7 +42,7 @@ chambers = [
       }
     },
     {
-      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
+      'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
       'whitePin': 14,
       'ledPin': 20,
       'pumpPin': 24,
