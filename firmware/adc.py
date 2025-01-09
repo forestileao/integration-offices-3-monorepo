@@ -18,7 +18,16 @@ class AdcController:
         ]
 
     def read_value(self, channel):
-        return self.channels[channel].value
+        retries = 0
+        while True:
+            retries += 1
+            try:
+                if retries > 5:
+                    print("Failed to read ADC value")
+                    return 15000
+                return self.channels[channel].value
+            except:
+                pass
 
     def read_voltage(self, channel):
         return self.channels[channel].voltage
