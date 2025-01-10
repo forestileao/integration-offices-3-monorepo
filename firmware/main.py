@@ -283,7 +283,7 @@ def main():
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
-            if True or int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.send_metrics(chamber_id)
                 firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
