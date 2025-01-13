@@ -22,12 +22,12 @@ chambers = [
       'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
       'whitePin': 21,
       'ledPin': 15,
-      'pumpPin': 18,
+      'pumpPin': 24,
       'heaterPin': 22,
       'peltierPin': 4,
       'chamberLocation': 4200,
-      'waterLevelChannel': 0,
-      'soilMoistureChannel': 1,
+      'waterLevelChannel': 2,
+      'soilMoistureChannel': 0,
       'ledLightsActivated': False,
       'tempMuxChannel': 0,
       'fanPin': 24,
@@ -45,12 +45,12 @@ chambers = [
       'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
       'whitePin': 14,
       'ledPin': 20,
-      'pumpPin': 24,
+      'pumpPin': 18,
       'heaterPin': 25,
       'peltierPin': 17,
       'chamberLocation': 1200,
-      'waterLevelChannel': 2,
-      'soilMoistureChannel': 3,
+      'waterLevelChannel': 3,
+      'soilMoistureChannel': 1,
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
       'fanPin': 9,
@@ -200,16 +200,16 @@ class Firmware:
     print("Temperature for chamber", chamber_id, temperature)
 
     if temperature < int(parameters['temperatureRange']):
-        #self.temp_humidity.turn_on_heater(chamber_id)
-        #self.temp_humidity.turn_off_peltier(chamber_id)
+        self.temp_humidity.turn_on_heater(chamber_id)
+        self.temp_humidity.turn_off_peltier(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
     elif temperature > int(parameters['temperatureRange']):
-        #self.temp_humidity.turn_off_heater(chamber_id)
-        #self.temp_humidity.turn_on_peltier(chamber_id)
+        self.temp_humidity.turn_off_heater(chamber_id)
+        self.temp_humidity.turn_on_peltier(chamber_id)
         print("Turning on peltier for chamber: ", chamber_id)
     else:
-        #self.temp_humidity.turn_off_heater(chamber_id)
-        #self.temp_humidity.turn_off_peltier(chamber_id)
+        self.temp_humidity.turn_off_heater(chamber_id)
+        self.temp_humidity.turn_off_peltier(chamber_id)
         print("Turning off heater and peltier for chamber: ", chamber_id)
 
   def control_soil_moisture(self, chamber_id, parameters):
@@ -218,14 +218,24 @@ class Firmware:
       channel = chamber['soilMoistureChannel']
       self.multi.select_channel(2)
       soil_moisture = self.adc.read_value(channel)
+      soil_moisture = self.handle_percentage((soil_moisture - 15000) / (31198 - 15000) * 100)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
       if soil_moisture < desired_soil_moisture:
           print("Turning on pump for chamber: ", chamber_id)
-         # self.pump_controller.set_pump_speed(chamber_id, 50)
-         # sleep(3)
+          self.pump_controller.set_pump_speed(chamber_id, 50)
+          sleep(1.5)
           print("Turning off pump for chamber: ", chamber_id)
-         # self.pump_controller.set_pump_speed(chamber_id, 0)
+          self.pump_controller.set_pump_speed(chamber_id, 0)
+
+  def handle_percentage(self, p):
+      if p > 100:
+          return 100
+
+      if p < 0:
+        return 0
+
+      return p
 
   def send_metrics(self, chamber_id):
     chamber = self.get_chamber(chamber_id)
@@ -239,8 +249,9 @@ class Firmware:
     soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
-    soil_moisture = (soil_moisture - 15000) / (31198 - 15000) * 100
-    water_level = ((700 - water_level)/500) * 100
+    soil_moisture = self.handle_percentage((soil_moisture - 15000) / (31198 - 15000) * 100)
+    water_level = self.handle_percentage((water_level - 15000) / (33000 - 15000) * 100)
+
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level):
         print("Metrics sent successfully")
@@ -261,13 +272,13 @@ class Firmware:
 def main():
 
     firmware = Firmware()
-    photoTimer = Timer()
-    metricsTimer = Timer()
-    photoTimer.start()
-    metricsTimer.start()
 
     while True:
         for chamber in chambers:
+            if 'photoTimer' not in chamber:
+                chamber['photoTimer']  = Timer()
+                chamber['photoTimer'].start()
+
             chamber_id = chamber['id']
             chamber['parameters'] = firmware.get_parameters(chamber_id)
 
@@ -278,17 +289,19 @@ def main():
             firmware.control_temperature(chamber_id, parameters=chamber['parameters'])
 
             # Control ventilation
-            firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
+            
+            #firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
 
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
-            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and photoTimer.elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.send_metrics(chamber_id)
-                firmware.move_camera(chamber_id)
+                #firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
-                photoTimer.reset()
+                chamber['photoTimer'].reset()
+                chamber['photoTimer'].start()
 
             # Sleep to avoid tight loop, adjust the sleep time as needed
             #sleep(10)  # Adjust sleep time (10 seconds) for the loop

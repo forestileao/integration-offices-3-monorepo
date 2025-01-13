@@ -1,8 +1,10 @@
 import board
 import time
+from time import sleep
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
+from multiplexer import Multiplexer
 
 class AdcController:
     def __init__(self, i2cBus = None) -> None:
@@ -29,10 +31,22 @@ class AdcController:
         return self.channels[channel].voltage
 
 if __name__ == "__main__":
-    adc = AdcController()
-    while True:
-        print(f"ADC Value: {adc.read_value(1)}")
-        print(f"Voltage: {adc.read_voltage(1)}")
+    sleep(2)
+    multi = Multiplexer()
+    sleep(2)
+    print('started multiplexer')
+    multi.select_channel(2)
+
+    print('selected channel')
+
+    adc = AdcController(multi.bus)
+
+    print('initialized bus')
+
+    for i in range(0, 2, 1):
+        print('reading value in channel ' + str(i))
+        print(f"ADC Value: {adc.read_value(i)}")
+        print(f"Voltage: {adc.read_voltage(i)}")
         time.sleep(1)
 
 # soil moisture
