@@ -19,12 +19,11 @@ class HttpApi:
 
     return response.json()
 
-  def send_metrics(self, chamber_id: str, soil_moisture: float, temperature: float, humidity: float, water_level: float):
+  def send_metrics(self, chamber_id: str, soil_moisture: float, temperature: float, humidity: float, water_level: float, lightState: bool = False):
 
     payload = {
+        'lightState': lightState,
         "chamberId": chamber_id,
-        "leafCount": 99999,
-        "greenArea": 99999,
         "estimateDate": datetime.now().isoformat(),  # Format the datetime to ISO string
         "soilMoisture": soil_moisture or 50,  # Replace with actual soil moisture sensor value
         "temperature": temperature or 25,  # Replace with actual temperature sensor value

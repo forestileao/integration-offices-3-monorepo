@@ -142,9 +142,6 @@ class Firmware:
       # Parse the lighting routine times
       lighting_routine_lower_time = datetime.strptime(parameters['lightingRoutine'].split('/')[0], '%H:%M').time()
       lighting_routine_upper_time = datetime.strptime(parameters['lightingRoutine'].split('/')[1], '%H:%M').time()
-      print('current time:', current_time)
-      print('lower time:', lighting_routine_lower_time)
-      print('upper time:', lighting_routine_upper_time)
 
           # Determine if the current time falls within the lighting routine
       if lighting_routine_upper_time < lighting_routine_lower_time:  # Spans past midnight
@@ -177,19 +174,27 @@ class Firmware:
 
   def control_ventilation(self, chamber_id, parameters):
     # Get current time as a datetime object
-    current_time = datetime.now().time()
+    current_time = (datetime.now() - timedelta(hours=3)).time()
 
     # Parse the ventilation schedule times
     ventilation_schedule_lower_time = datetime.strptime(parameters['ventilationSchedule'].split('/')[0], '%H:%M').time()
     ventilation_schedule_upper_time = datetime.strptime(parameters['ventilationSchedule'].split('/')[1], '%H:%M').time()
 
-    # Check if current time fallsstrptime within the ventilation schedule
-    if ventilation_schedule_lower_time <= current_time <= ventilation_schedule_upper_time:
-        self.fans_controller.turnOnFan(chamber_id)
-        print("Turning on fan for chamber:", chamber_id)
-    else:
-        self.fans_controller.turnOffFan(chamber_id)
-        print("Turning off fan for chamber:", chamber_id)
+    if ventilation_schedule_upper_time < ventilation_schedule_lower_time:  # Spans past midnight
+        # Adjust times to account for "next day"
+        if current_time >= ventilation_schedule_lower_time or current_time <= ventilation_schedule_upper_time:
+          self.fans_controller.turnOnFan(chamber_id)
+          print("Turning on Fans for chamber:", chamber_id)
+        else:
+          self.fans_controller.turnOffFan(chamber_id)
+          print("Turning off Fans for chamber:", chamber_id)
+    else:  # Same day
+        if ventilation_schedule_lower_time <= current_time <= ventilation_schedule_upper_time:
+          self.fans_controller.turnOnFan(chamber_id)
+          print("Turning on Fans for chamber:", chamber_id)
+        else:
+          self.fans_controller.turnOffFan(chamber_id)
+          print("Turning off Fans for chamber:", chamber_id)
 
   def control_temperature(self, chamber_id, parameters):
     chamber = self.get_chamber(chamber_id)
@@ -253,7 +258,7 @@ class Firmware:
     water_level = self.handle_percentage((water_level - 15000) / (33000 - 15000) * 100)
 
 
-    if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level):
+    if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level, chamber['ledLightsActivated']):
         print("Metrics sent successfully")
     else:
         print("Failed to send metrics")
@@ -289,7 +294,7 @@ def main():
             firmware.control_temperature(chamber_id, parameters=chamber['parameters'])
 
             # Control ventilation
-            
+
             #firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
 
             # Control soil moisture
