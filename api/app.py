@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from fastapi.responses import JSONResponse
 import shutil
-from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey, DateTime, Table
+from sqlalchemy import create_engine, Column, String, Float, Integer, ForeignKey, DateTime, Table, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -152,18 +152,19 @@ class Photo(Base):
     chamberId = Column(String, ForeignKey("chambers.id"))
     captureDate = Column(DateTime, default=datetime.utcnow)
     imageUrl = Column(String, nullable=False)
+    greenArea = Column(Float, default=0)
+    leafCount = Column(Integer, default=0)
 
 class Estimate(Base):
     __tablename__ = "estimates"
     id = Column(String, primary_key=True, default=generate_uuid)
     chamberId = Column(String, ForeignKey("chambers.id"))
-    leafCount = Column(Integer, nullable=False)
-    greenArea = Column(Float, nullable=False)
     estimateDate = Column(DateTime, default=datetime.utcnow)
     waterLevel = Column(Float, nullable=False)
     soilMoisture = Column(Float, nullable=False)
     temperature = Column(Float, nullable=False)
     humidity = Column(Float, nullable=False)
+    lightState = Column(Boolean, nullable=False)
 
 class Permission(Base):
     __tablename__ = "permissions"
@@ -324,14 +325,21 @@ async def get_project(
     estimates_task = asyncio.create_task(
         db.execute(
             select(Estimate) \
-                .filter(Estimate.chamberId.in_([c.id for c in chambers])) \
-                .filter(Estimate.leafCount != 99999)
+                .filter(Estimate.chamberId.in_([c.id for c in chambers]))
+        )
+    )
+
+    photos_task = asyncio.create_task(
+        db.execute(
+            select(Photo) \
+                .filter(Photo.chamberId.in_([c.id for c in chambers]))
         )
     )
 
     # Get results
     parameters_result = await parameters_task
     estimates_result = await estimates_task
+    photos_result = await photos_task
 
     # Extract the data from the results
     project, _role_id, role_name = role_user_data
@@ -342,6 +350,7 @@ async def get_project(
         "chambers": chambers,
         "parameters": parameters_result.scalars().all(),
         "estimates": estimates_result.scalars().all(),
+        "photos": photos_result.scalars().all()
     }
 
 @app.delete("/projects/{project_id}/", response_model=dict)
@@ -485,19 +494,8 @@ def create_photo(chamberId: str, photo: UploadFile = File(...), db: Session = De
     with open(file_location, "wb") as buffer:
         buffer.write(marked_binary)
 
-    # update last estimate with the new photo
-    last_estimate = db.query(Estimate) \
-        .filter(Estimate.chamberId == chamberId) \
-        .filter(Estimate.greenArea == 99999) \
-        .order_by(Estimate.estimateDate.desc()).first()
-
-    if last_estimate:
-        last_estimate.greenArea = green_area
-        last_estimate.leafCount = leaf_count
-        db.commit()
-
     # Create a new Photo entry in the database
-    photo_entry = Photo(chamberId=chamberId, imageUrl=file_location)
+    photo_entry = Photo(chamberId=chamberId, imageUrl=file_location, greenArea=green_area, leafCount=leaf_count)
     db.add(photo_entry)
     db.commit()
     db.refresh(photo_entry)
@@ -514,12 +512,12 @@ def list_photos(chamber_id: str, db: Session = Depends(get_db), current_user: di
 
 # Create Estimates
 @app.post("/estimates/", response_model=dict)
-def create_estimate(chamberId: str = Body(), leafCount: int = Body(), greenArea: float = Body(), estimateDate: datetime = Body(),
+def create_estimate(chamberId: str = Body(), estimateDate: datetime = Body(),
                     soilMoisture: float = Body(), temperature: float = Body(), humidity: float = Body(),
-                    waterLevel: float = Body(),
+                    waterLevel: float = Body(), lightState: bool = Body(),
                     db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    estimate = Estimate(chamberId=chamberId, leafCount=leafCount, greenArea=greenArea, estimateDate=estimateDate or datetime.utcnow(),
-                        soilMoisture=soilMoisture, temperature=temperature, humidity=humidity, waterLevel=waterLevel)
+    estimate = Estimate(chamberId=chamberId, estimateDate=estimateDate or datetime.utcnow(),
+                        soilMoisture=soilMoisture, temperature=temperature, humidity=humidity, waterLevel=waterLevel, lightState=lightState)
     db.add(estimate)
     db.commit()
     db.refresh(estimate)

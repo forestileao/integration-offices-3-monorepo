@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS photos (
     "chamberId" TEXT NOT NULL,
     "captureDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "imageUrl" TEXT NOT NULL,
+    "leafCount" INTEGER NOT NULL,
+    "greenArea" REAL NOT NULL,
     FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
 
@@ -45,11 +47,10 @@ CREATE TABLE IF NOT EXISTS photos (
 CREATE TABLE IF NOT EXISTS estimates (
     id TEXT PRIMARY KEY,
     "chamberId" TEXT NOT NULL,
-    "leafCount" INTEGER NOT NULL,
-    "greenArea" REAL NOT NULL,
     "soilMoisture" REAL NOT NULL,
     "temperature" REAL NOT NULL,
     "humidity" REAL NOT NULL,
+    "lightState" boolean NOT NULL,
     "estimateDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY ("chamberId") REFERENCES chambers (id)
 );
