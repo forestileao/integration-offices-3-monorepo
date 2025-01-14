@@ -57,13 +57,12 @@ interface Parameter {
 interface Estimate {
   id: string;
   chamberId: string;
-  leafCount: number;
-  greenArea: number;
   estimateDate: string;
   soilMoisture: number;
   temperature: number;
   waterLevel: number;
   humidity: number;
+  lightState: number;
 }
 
 interface Project {
@@ -73,12 +72,15 @@ interface Project {
   chambers: Chamber[];
   estimates: Estimate[];
   parameters: Parameter[];
+  photos: Photo[];
 }
 
 interface Photo {
   id: string;
   chamberId: string;
   captureDate: string;
+  leafCount: number;
+  greenArea: number;
 }
 
 export default function PlantMonitoringDashboard() {
@@ -104,25 +106,35 @@ export default function PlantMonitoringDashboard() {
         );
       }) || [];
 
+  const photoEstimates =
+    project.photos
+      ?.filter((photo: Photo) => photo.chamberId === selectedChamber)
+      .sort((a, b) => {
+        return (
+          new Date(a.captureDate).getTime() - new Date(b.captureDate).getTime()
+        );
+      }) || [];
+
   const mainEstimate = estimates.at(-1);
+  const mainPhotoEstimate = photoEstimates.at(-1);
 
   const greenAreaData = [
     ["x", "Green Area"],
-    ...(estimates.length == 0
+    ...(photoEstimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
-      : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleString(),
-          estimate.greenArea,
+      : photoEstimates.map((photo: Photo) => [
+          new Date(photo.captureDate).toLocaleString(),
+          photo.greenArea,
         ])),
   ];
 
   const visibleLeavesData = [
     ["x", "Visible Leaves"],
-    ...(estimates.length == 0
+    ...(photoEstimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
-      : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleString(),
-          estimate.leafCount,
+      : photoEstimates.map((photo: Photo) => [
+          new Date(photo.captureDate).toLocaleString(),
+          photo.leafCount,
         ])),
   ];
 
@@ -162,7 +174,7 @@ export default function PlantMonitoringDashboard() {
       ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
           new Date(estimate.estimateDate).toLocaleString(),
-          1,
+          Number(estimate.lightState),
         ])),
   ];
 
@@ -409,7 +421,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.leafCount || "- "}
+                      {mainPhotoEstimate?.leafCount || "- "}
                     </div>
                   </CardContent>
                 </Card>
@@ -422,7 +434,7 @@ export default function PlantMonitoringDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {mainEstimate?.greenArea?.toFixed(2) || "- "} cm²
+                      {mainPhotoEstimate?.greenArea?.toFixed(2) || "- "} cm²
                     </div>
                   </CardContent>
                 </Card>
@@ -470,7 +482,7 @@ export default function PlantMonitoringDashboard() {
                     options={soilMoistureOptions}
                   />
                   <Chart
-                    chartType="LineChart"
+                    chartType="SteppedAreaChart"
                     width="100%"
                     height="400px"
                     data={lightStateData}
