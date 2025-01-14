@@ -595,10 +595,11 @@ export default function PlantMonitoringDashboard() {
                         <SelectValue placeholder="Select temperature range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={"12"}>10 - 15 °C</SelectItem>
-                        <SelectItem value={"17"}>15 - 20 °C</SelectItem>
-                        <SelectItem value={"22"}>20 - 25 °C</SelectItem>
-                        <SelectItem value={"28"}>25 - 30 °C</SelectItem>
+                        {Array.from({ length: 16 }, (_x, i) => (
+                          <SelectItem key={i.toString()} value={String(i + 15)}>
+                            {i}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
