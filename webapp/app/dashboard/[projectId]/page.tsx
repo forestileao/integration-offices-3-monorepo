@@ -596,8 +596,11 @@ export default function PlantMonitoringDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 16 }, (_x, i) => (
-                          <SelectItem key={i.toString()} value={String(i + 15)}>
-                            {i}
+                          <SelectItem
+                            key={i.toString() + "temperature-ee"}
+                            value={String(i + 15)}
+                          >
+                            {i + 15}
                           </SelectItem>
                         ))}
                       </SelectContent>
