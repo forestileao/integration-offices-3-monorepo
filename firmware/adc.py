@@ -52,11 +52,10 @@ if __name__ == "__main__":
     print('initialized bus')
 
     while True:
-        print('reading value in channel ' + str(3))
-        print(f"ADC Value: {adc.read_value(3)}")
-        print(f"Voltage: {adc.read_voltage(3)}")
-        print(f'Percentage: {handle_percentage((adc.read_value(3) - 31000) / (33600 - 31000) * 100)}')
+        print(f'water level: {handle_percentage((adc.read_value(3) - 31000) / (33600 - 31000) * 100)}')
         time.sleep(1)
+        print('soild moisture value' , adc.read_value(1))
+        print('soild moisture perc' , handle_percentage(100 - (adc.read_value(1) - 15100) / (17900 - 15100) * 100))
 
 # soil moisture
 # min: 31198 # seco

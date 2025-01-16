@@ -223,7 +223,7 @@ class Firmware:
       channel = chamber['soilMoistureChannel']
       self.multi.select_channel(2)
       soil_moisture = self.adc.read_value(channel)
-      soil_moisture = self.handle_percentage(100 - (soil_moisture - 15000) / (31198 - 15000) * 100)
+      soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
       if soil_moisture < desired_soil_moisture:
@@ -254,7 +254,7 @@ class Firmware:
     soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
-    soil_moisture = self.handle_percentage(100 - (soil_moisture - 15000) / (31198 - 15000) * 100)
+    soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
     water_level = self.handle_percentage((water_level - 31000) / (33600 - 31000) * 100)
 
 
