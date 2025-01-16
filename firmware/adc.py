@@ -30,6 +30,14 @@ class AdcController:
     def read_voltage(self, channel):
         return self.channels[channel].voltage
 
+def handle_percentage(p):
+  if p > 100:
+      return 100
+
+  if p < 0:
+    return 0
+
+  return p
 if __name__ == "__main__":
     sleep(2)
     multi = Multiplexer()
@@ -43,10 +51,11 @@ if __name__ == "__main__":
 
     print('initialized bus')
 
-    for i in range(0, 2, 1):
-        print('reading value in channel ' + str(i))
-        print(f"ADC Value: {adc.read_value(i)}")
-        print(f"Voltage: {adc.read_voltage(i)}")
+    while True:
+        print('reading value in channel ' + str(3))
+        print(f"ADC Value: {adc.read_value(3)}")
+        print(f"Voltage: {adc.read_voltage(3)}")
+        print(f'Percentage: {handle_percentage((adc.read_value(3) - 31000) / (33000 - 31000) * 100)}')
         time.sleep(1)
 
 # soil moisture
