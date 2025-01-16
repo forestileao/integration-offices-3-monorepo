@@ -55,7 +55,7 @@ if __name__ == "__main__":
         print('reading value in channel ' + str(3))
         print(f"ADC Value: {adc.read_value(3)}")
         print(f"Voltage: {adc.read_voltage(3)}")
-        print(f'Percentage: {handle_percentage((adc.read_value(3) - 31000) / (33000 - 31000) * 100)}')
+        print(f'Percentage: {handle_percentage((adc.read_value(3) - 31000) / (33600 - 31000) * 100)}')
         time.sleep(1)
 
 # soil moisture
