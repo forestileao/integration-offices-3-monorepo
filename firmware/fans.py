@@ -2,6 +2,27 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 
+class Servo:
+    def __init__(self, pin):
+        """Initialize the Servo with a given GPIO pin."""
+        self.pin = pin
+        GPIO.setup(self.pin, GPIO.OUT)
+        self.pwm = GPIO.PWM(self.pin, 50)  # 50 Hz for servo
+        self.pwm.start(0)  # Start with 0% duty cycle
+
+    def set_angle(self, angle):
+        """Move the servo to the specified angle (0-180 degrees)."""
+        duty_cycle = (angle / 18.0) + 2.5  # Convert angle to duty cycle
+        self.pwm.ChangeDutyCycle(duty_cycle)
+        sleep(0.5)  # Allow servo time to move
+        self.pwm.ChangeDutyCycle(0)  # Stop sending signal to avoid jitter
+
+    def cleanup(self):
+        """Stop the servo and clean up GPIO."""
+        self.pwm.stop()
+        GPIO.cleanup()
+
+
 class FansController:
   def __init__(self, chambers):
     self.chambers = chambers
@@ -11,8 +32,7 @@ class FansController:
       GPIO.setup(chamber['fanPin'], GPIO.OUT)
       GPIO.output(chamber['fanPin'], GPIO.LOW)
       GPIO.setup(chamber['fanServoPin'], GPIO.OUT)
-      pwm = GPIO.PWM(chamber['fanServoPin'], 25)
-      pwm.start(0)
+      pwm = Servo(chamber['fanServoPin'])
       self.pwms[chamber['id']] = pwm
 
 
@@ -21,9 +41,7 @@ class FansController:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['fanPin'], GPIO.HIGH)
         pwm = self.pwms[chamber_id]
-        pwm.ChangeDutyCycle(2.5)
-        sleep(1)
-        pwm.ChangeDutyCycle(0)
+        pwm.set_angle(0)
         break
 
   def turnOffFan(self, chamber_id):
@@ -31,38 +49,12 @@ class FansController:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['fanPin'], GPIO.LOW)
         pwm = self.pwms[chamber_id]
-        pwm.ChangeDutyCycle(6.5)
-        sleep(1)
-        pwm.ChangeDutyCycle(0)
+        pwm.set_angle(50)
         break
 
 if __name__ == '__main__':
-    GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
     chambers = [
-    {
-      'id': '90617ba4-ee9b-488f-82bc-cbe8b43aac67',
-      'whitePin': 21,
-      'ledPin': 15,
-      'pumpPin': 18,
-      'heaterPin': 22,
-      'peltierPin': 4,
-      'chamberLocation': 4200,
-      'waterLevelChannel': 0,
-      'soilMoistureChannel': 1,
-      'ledLightsActivated': False,
-      'tempMuxChannel': 0,
-      'fanPin': 24,
-      'fanServoPin': 25,
-      'parameters': {
-        "temperatureRange": "17",
-        "soilMoistureLowerLimit": 60,
-        "photoCaptureFrequency": "60",
-        "id": "b231822f-5e74-41ea-9678-0c61404fe6dd",
-        "lightingRoutine": "07:40/18:20",
-        "ventilationSchedule": "10:00/11:00"
-      }
-    },
     {
       'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
       'whitePin': 20,
@@ -75,8 +67,8 @@ if __name__ == '__main__':
       'soilMoistureChannel': 3,
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
-      'fanPin': 9,
-      'fanServoPin': 11,
+      'fanPin': 6,
+      'fanServoPin': 0,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -89,11 +81,9 @@ if __name__ == '__main__':
 
     fans = FansController(chambers)
     while True:
-
-      #fans.turnOnFan(chambers[0]['id'])
-      fans.turnOnFan(chambers[1]['id'])
+      print('abrido')
+      fans.turnOnFan(chambers[0]['id'])
       sleep(3)
-      #fans.turnOffFan(chambers[0]['id'])
-      fans.turnOffFan(chambers[1]['id'])
-
+      print('fechando')
+      fans.turnOffFan(chambers[0]['id'])
       sleep(3)
