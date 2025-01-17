@@ -54,7 +54,7 @@ chambers = [
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
       'fanPin': 9,
-      'fanServoPin': 11,
+      'fanServoPin': 0,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
