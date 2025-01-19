@@ -30,8 +30,9 @@ chambers = [
       'soilMoistureChannel': 0,
       'ledLightsActivated': False,
       'tempMuxChannel': 0,
-      'fanPin': 24,
+      'fanPin': 10,
       'fanServoPin': 25,
+      'externalFan': 27,
       'parameters': {
         "temperatureRange": "17",
         "soilMoistureLowerLimit": 60,
@@ -53,8 +54,9 @@ chambers = [
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
-      'fanPin': 9,
+      'fanPin': 23,
       'fanServoPin': 0,
+      'externalFan': 22,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -207,14 +209,17 @@ class Firmware:
     if temperature < int(parameters['temperatureRange']):
         self.temp_humidity.turn_on_heater(chamber_id)
         self.temp_humidity.turn_off_peltier(chamber_id)
+        self.fans_controller.turnOffExternalFan(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
     elif temperature > int(parameters['temperatureRange']):
         self.temp_humidity.turn_off_heater(chamber_id)
         self.temp_humidity.turn_on_peltier(chamber_id)
+        self.fans_controller.turnOnExternalFan(chamber_id)
         print("Turning on peltier for chamber: ", chamber_id)
     else:
         self.temp_humidity.turn_off_heater(chamber_id)
         self.temp_humidity.turn_off_peltier(chamber_id)
+        self.fans_controller.turnOffExternalFan(chamber_id)
         print("Turning off heater and peltier for chamber: ", chamber_id)
 
   def control_soil_moisture(self, chamber_id, parameters):

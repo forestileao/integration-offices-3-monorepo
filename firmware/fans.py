@@ -31,6 +31,8 @@ class FansController:
     for chamber in chambers:
       GPIO.setup(chamber['fanPin'], GPIO.OUT)
       GPIO.output(chamber['fanPin'], GPIO.LOW)
+      GPIO.setup(chamber['externalFanPin'], GPIO.OUT)
+      GPIO.output(chamber['externalFanPin'], GPIO.LOW)
       GPIO.setup(chamber['fanServoPin'], GPIO.OUT)
       pwm = Servo(chamber['fanServoPin'])
       self.pwms[chamber['id']] = pwm
@@ -51,6 +53,18 @@ class FansController:
         pwm = self.pwms[chamber_id]
         pwm.set_angle(50)
         break
+
+  def turnOnExternalFan(self, chamber_id):
+    for chamber in self.chambers:
+       if chamber['id'] == chamber_id:
+         GPIO.output(chamber['externalFanPin'], GPIO.HIGH)
+         break
+
+  def turnOffExternalFan(self, chamber_id):
+    for chamber in self.chambers:
+       if chamber['id'] == chamber_id:
+         GPIO.output(chamber['externalFanPin'], GPIO.LOW)
+         break
 
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BCM)
