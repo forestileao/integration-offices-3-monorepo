@@ -12,7 +12,7 @@ class TempHumidity:
       GPIO.setup(chamber['heaterPin'], GPIO.OUT)
       GPIO.output(chamber['heaterPin'], GPIO.LOW)
       GPIO.setup(chamber['peltierPin'], GPIO.OUT)
-      GPIO.output(chamber['peltierPin'], GPIO.LOW)
+      GPIO.output(chamber['peltierPin'], GPIO.HIGH)
 
 
   def read_temperature(self, chamber_id):
@@ -35,12 +35,12 @@ class TempHumidity:
   def turn_on_peltier(self, chamber_id):
     for chamber in self.chambers:
       if chamber['id'] == chamber_id:
-        GPIO.output(chamber['peltierPin'], GPIO.HIGH)
+        GPIO.output(chamber['peltierPin'], GPIO.LOW)
 
   def turn_off_peltier(self, chamber_id):
     for chamber in self.chambers:
       if chamber['id'] == chamber_id:
-        GPIO.output(chamber['peltierPin'], GPIO.LOW)
+        GPIO.output(chamber['peltierPin'], GPIO.HIGH)
 
 if __name__ == '__main__':
   chambers = [
