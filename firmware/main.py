@@ -32,7 +32,7 @@ chambers = [
       'tempMuxChannel': 1,
       'fanPin': 10,
       'fanServoPin': 25,
-      'externalFanPin': 27,
+      'externalFanPin': 22,
       'parameters': {
         "temperatureRange": "17",
         "soilMoistureLowerLimit": 60,
@@ -56,7 +56,7 @@ chambers = [
       'tempMuxChannel': 0,
       'fanPin': 23,
       'fanServoPin': 0,
-      'externalFanPin': 22,
+      'externalFanPin': 27,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
