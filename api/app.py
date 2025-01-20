@@ -521,17 +521,17 @@ def create_estimate(chamberId: str = Body(), estimateDate: datetime = Body(),
     db.add(estimate)
     db.commit()
     db.refresh(estimate)
-    return {"id": estimate.id, "chamberId": estimate.chamberId, "leafCount": estimate.leafCount, "greenArea": estimate.greenArea}
+    return {"id": estimate.id, "chamberId": estimate.chamberId}
 
 # get estimates by optional chamberId
 @app.get("/estimates/", response_model=list)
 def list_estimates(chamberId = None, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if chamberId:
         estimates = db.query(Estimate).filter(Estimate.chamberId == chamberId).all()
-        return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate, "waterLevel": e.waterLevel} for e in estimates]
+        return [{"id": e.id, "chamberId": e.chamberId, "estimateDate": e.estimateDate, "waterLevel": e.waterLevel} for e in estimates]
 
     estimates = db.query(Estimate).all()
-    return [{"id": e.id, "chamberId": e.chamberId, "leafCount": e.leafCount, "greenArea": e.greenArea, "estimateDate": e.estimateDate} for e in estimates]
+    return [{"id": e.id, "chamberId": e.chamberId, "waterLevel": e.waterLevel, "estimateDate": e.estimateDate} for e in estimates]
 
 # Create Permissions
 @app.post("/permissions/", response_model=dict)
