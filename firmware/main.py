@@ -31,7 +31,7 @@ chambers = [
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
       'fanPin': 10,
-      'fanServoPin': 25,
+      'fanServoPin': 11,
       'externalFanPin': 22,
       'parameters': {
         "temperatureRange": "17",
