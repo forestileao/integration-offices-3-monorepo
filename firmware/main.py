@@ -300,14 +300,14 @@ def main():
 
             # Control ventilation
 
-            #firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
+            firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
 
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
             if int(chamber['parameters']['photoCaptureFrequency']) > 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.send_metrics(chamber_id)
-                #firmware.move_camera(chamber_id)
+                firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
                 chamber['photoTimer'].reset()
