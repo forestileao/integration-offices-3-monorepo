@@ -288,6 +288,8 @@ def main():
             if 'photoTimer' not in chamber:
                 chamber['photoTimer']  = Timer()
                 chamber['photoTimer'].start()
+                chamber['metricTimer']  = Timer()
+                chamber['metricTimer'].start()
 
             chamber_id = chamber['id']
             chamber['parameters'] = firmware.get_parameters(chamber_id)
@@ -306,12 +308,16 @@ def main():
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
             if int(chamber['parameters']['photoCaptureFrequency']) > 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
-                firmware.send_metrics(chamber_id)
                 firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
                 chamber['photoTimer'].reset()
                 chamber['photoTimer'].start()
+
+            if chamber['metricTimer'].elapsed_time() / 60 > 1:
+                firmware.send_metrics(chamber_id)
+                chamber['metricTimer'].reset()
+                chamber['metricTimer'].start()
 
             # Sleep to avoid tight loop, adjust the sleep time as needed
             #sleep(10)  # Adjust sleep time (10 seconds) for the loop
