@@ -20,6 +20,7 @@ GPIO.setmode(GPIO.BCM)
 chambers = [
     {
       'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
+      'activated': False,
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 24,
@@ -42,30 +43,31 @@ chambers = [
         "ventilationSchedule": "10:00/11:00"
       }
     },
-    # {
-    #   'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
-    #   'whitePin': 14,
-    #   'ledPin': 20,
-    #   'pumpPin': 18,
-    #   'heaterPin': 19,
-    #   'peltierPin': 17,
-    #   'chamberLocation': 1200,
-    #   'waterLevelChannel': 3,
-    #   'soilMoistureChannel': 1,
-    #   'ledLightsActivated': False,
-    #   'tempMuxChannel': 0,
-    #   'fanPin': 10,
-    #   'fanServoPin': 25,
-    #   'externalFanPin': 27,
-    #   'parameters': {
-    #     "temperatureRange": "28",
-    #     "soilMoistureLowerLimit": 60,
-    #     "photoCaptureFrequency": "60",
-    #     "id": "1e43809c-0daa-413f-ab18-988ef80e4af6",
-    #     "lightingRoutine": "07:40/18:20",
-    #     "ventilationSchedule": "10:00/11:00"
-    #     }
-    # },
+    {
+      'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
+      'activated': True,
+      'whitePin': 14,
+      'ledPin': 20,
+      'pumpPin': 18,
+      'heaterPin': 19,
+      'peltierPin': 17,
+      'chamberLocation': 1200,
+      'waterLevelChannel': 3,
+      'soilMoistureChannel': 1,
+      'ledLightsActivated': False,
+      'tempMuxChannel': 0,
+      'fanPin': 10,
+      'fanServoPin': 25,
+      'externalFanPin': 27,
+      'parameters': {
+        "temperatureRange": "28",
+        "soilMoistureLowerLimit": 60,
+        "photoCaptureFrequency": "60",
+        "id": "1e43809c-0daa-413f-ab18-988ef80e4af6",
+        "lightingRoutine": "07:40/18:20",
+        "ventilationSchedule": "10:00/11:00"
+        }
+    },
 ]
 
 EN=9
@@ -290,6 +292,9 @@ def main():
 
     while True:
         for chamber in chambers:
+            if not chamber['activated']:
+                continue
+
             if 'photoTimer' not in chamber:
                 chamber['photoTimer']  = Timer()
                 chamber['photoTimer'].start()
