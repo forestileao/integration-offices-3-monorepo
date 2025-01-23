@@ -211,7 +211,7 @@ class Firmware:
         self.temp_humidity.turn_off_peltier(chamber_id)
         self.fans_controller.turnOffExternalFan(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
-    elif int(parameters['temperatureRange']) - temperature <= 1:
+    elif 0 < int(parameters['temperatureRange']) - temperature <= 1:
         self.temp_humidity.turn_off_heater(chamber_id)
         self.temp_humidity.turn_off_peltier(chamber_id)
         self.fans_controller.turnOffExternalFan(chamber_id)
