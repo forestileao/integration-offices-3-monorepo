@@ -12,12 +12,15 @@ class HttpApi:
 
 
   def get_parameters(self, chamber_id):
-    response = get(self.base_url + '/chamber/parameters/' + chamber_id + '/', headers=self.headers)
+    try:
+      response = get(self.base_url + '/chamber/parameters/' + chamber_id + '/', headers=self.headers)
 
-    if response.status_code != 200:
+      if response.status_code != 200:
+        return None
+
+      return response.json()
+    except Exception as e:
       return None
-
-    return response.json()
 
   def send_metrics(self, chamber_id: str, soil_moisture: float, temperature: float, humidity: float, water_level: float, lightState: bool = False):
     try:

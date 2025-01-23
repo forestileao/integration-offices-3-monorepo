@@ -9,8 +9,14 @@ class Servo:
         GPIO.setup(self.pin, GPIO.OUT)
         self.pwm = GPIO.PWM(self.pin, 50)  # 50 Hz for servo
         self.pwm.start(0)  # Start with 0% duty cycle
+        self.current_angle = None
 
     def set_angle(self, angle):
+        if angle == self.current_angle:
+            return
+
+        self.current_angle = angle
+
         """Move the servo to the specified angle (0-180 degrees)."""
         duty_cycle = (angle / 18.0) + 2.5  # Convert angle to duty cycle
         self.pwm.ChangeDutyCycle(duty_cycle)

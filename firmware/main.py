@@ -211,6 +211,11 @@ class Firmware:
         self.temp_humidity.turn_off_peltier(chamber_id)
         self.fans_controller.turnOffExternalFan(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
+    elif int(parameters['temperatureRange']) - temperature <= 1:
+        self.temp_humidity.turn_off_heater(chamber_id)
+        self.temp_humidity.turn_off_peltier(chamber_id)
+        self.fans_controller.turnOffExternalFan(chamber_id)
+        print("Turning off peltier and heater for chamber: ", chamber_id)
     elif temperature > int(parameters['temperatureRange']):
         self.temp_humidity.turn_off_heater(chamber_id)
         self.temp_humidity.turn_on_peltier(chamber_id)
@@ -292,7 +297,10 @@ def main():
                 chamber['metricTimer'].start()
 
             chamber_id = chamber['id']
-            chamber['parameters'] = firmware.get_parameters(chamber_id)
+            parameters = firmware.get_parameters(chamber_id)
+
+            if parameters is not None:
+                chamber['parameters'] = parameters
 
             # Control lights based on schedule
             firmware.control_lights(chamber_id, parameters=chamber['parameters'])
@@ -301,7 +309,6 @@ def main():
             firmware.control_temperature(chamber_id, parameters=chamber['parameters'])
 
             # Control ventilation
-
             firmware.control_ventilation(chamber_id, parameters=chamber['parameters'])
 
             # Control soil moisture
