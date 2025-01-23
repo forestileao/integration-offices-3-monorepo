@@ -49,7 +49,7 @@ class FansController:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['fanPin'], GPIO.HIGH)
         pwm = self.pwms[chamber_id]
-        pwm.set_angle(0)
+        pwm.set_angle(50)
         break
 
   def turnOffFan(self, chamber_id):
@@ -57,7 +57,7 @@ class FansController:
       if chamber['id'] == chamber_id:
         GPIO.output(chamber['fanPin'], GPIO.LOW)
         pwm = self.pwms[chamber_id]
-        pwm.set_angle(50)
+        pwm.set_angle(0)
         break
 
   def turnOnExternalFan(self, chamber_id):
@@ -76,19 +76,44 @@ if __name__ == '__main__':
     GPIO.setmode(GPIO.BCM)
     chambers = [
     {
-      'id': '7ce04bef-2212-4a9b-8262-ed659cd124ab',
-      'whitePin': 20,
-      'ledPin': 14,
+      'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
+      'whitePin': 21,
+      'ledPin': 15,
       'pumpPin': 24,
-      'heaterPin': 25,
-      'peltierPin': 8,
-      'chamberLocation': 1200,
+      'heaterPin': 13,
+      'peltierPin': 4,
+      'chamberLocation': 4200,
       'waterLevelChannel': 2,
-      'soilMoistureChannel': 3,
+      'soilMoistureChannel': 0,
       'ledLightsActivated': False,
       'tempMuxChannel': 1,
-      'fanPin': 6,
-      'fanServoPin': 0,
+      'fanPin': 23,
+      'fanServoPin': 11,
+      'externalFanPin': 22,
+      'parameters': {
+        "temperatureRange": "17",
+        "soilMoistureLowerLimit": 60,
+        "photoCaptureFrequency": "60",
+        "id": "b231822f-5e74-41ea-9678-0c61404fe6dd",
+        "lightingRoutine": "07:40/18:20",
+        "ventilationSchedule": "10:00/11:00"
+      }
+    },
+    {
+      'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
+      'whitePin': 14,
+      'ledPin': 20,
+      'pumpPin': 18,
+      'heaterPin': 19,
+      'peltierPin': 17,
+      'chamberLocation': 1200,
+      'waterLevelChannel': 3,
+      'soilMoistureChannel': 1,
+      'ledLightsActivated': False,
+      'tempMuxChannel': 0,
+      'fanPin': 10,
+      'fanServoPin': 25,
+      'externalFanPin': 27,
       'parameters': {
         "temperatureRange": "28",
         "soilMoistureLowerLimit": 60,
@@ -97,13 +122,16 @@ if __name__ == '__main__':
         "lightingRoutine": "07:40/18:20",
         "ventilationSchedule": "10:00/11:00"
         }
-    },]
+    },
+          ]
 
     fans = FansController(chambers)
     while True:
       print('abrido')
       fans.turnOnFan(chambers[0]['id'])
+      fans.turnOnFan(chambers[1]['id'])
       sleep(3)
       print('fechando')
       fans.turnOffFan(chambers[0]['id'])
+      fans.turnOffFan(chambers[1]['id'])
       sleep(3)
