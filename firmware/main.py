@@ -42,30 +42,30 @@ chambers = [
         "ventilationSchedule": "10:00/11:00"
       }
     },
-    {
-      'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
-      'whitePin': 14,
-      'ledPin': 20,
-      'pumpPin': 18,
-      'heaterPin': 19,
-      'peltierPin': 17,
-      'chamberLocation': 1200,
-      'waterLevelChannel': 3,
-      'soilMoistureChannel': 1,
-      'ledLightsActivated': False,
-      'tempMuxChannel': 0,
-      'fanPin': 10,
-      'fanServoPin': 25,
-      'externalFanPin': 27,
-      'parameters': {
-        "temperatureRange": "28",
-        "soilMoistureLowerLimit": 60,
-        "photoCaptureFrequency": "60",
-        "id": "1e43809c-0daa-413f-ab18-988ef80e4af6",
-        "lightingRoutine": "07:40/18:20",
-        "ventilationSchedule": "10:00/11:00"
-        }
-    },
+    # {
+    #   'id': 'd9db68f0-e7c9-4135-bf96-a9f6ef568fea',
+    #   'whitePin': 14,
+    #   'ledPin': 20,
+    #   'pumpPin': 18,
+    #   'heaterPin': 19,
+    #   'peltierPin': 17,
+    #   'chamberLocation': 1200,
+    #   'waterLevelChannel': 3,
+    #   'soilMoistureChannel': 1,
+    #   'ledLightsActivated': False,
+    #   'tempMuxChannel': 0,
+    #   'fanPin': 10,
+    #   'fanServoPin': 25,
+    #   'externalFanPin': 27,
+    #   'parameters': {
+    #     "temperatureRange": "28",
+    #     "soilMoistureLowerLimit": 60,
+    #     "photoCaptureFrequency": "60",
+    #     "id": "1e43809c-0daa-413f-ab18-988ef80e4af6",
+    #     "lightingRoutine": "07:40/18:20",
+    #     "ventilationSchedule": "10:00/11:00"
+    #     }
+    # },
 ]
 
 EN=9
@@ -211,7 +211,7 @@ class Firmware:
         self.temp_humidity.turn_off_peltier(chamber_id)
         self.fans_controller.turnOffExternalFan(chamber_id)
         print("Turning on heater for chamber: ", chamber_id)
-    elif 0 < int(parameters['temperatureRange']) - temperature <= 1:
+    elif 0 < int(parameters['temperatureRange']) - temperature <= 2.5:
         self.temp_humidity.turn_off_heater(chamber_id)
         self.temp_humidity.turn_off_peltier(chamber_id)
         self.fans_controller.turnOffExternalFan(chamber_id)
