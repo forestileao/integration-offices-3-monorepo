@@ -49,12 +49,6 @@ class StepperController:
             GPIO.output(self.y_step_pin, GPIO.LOW)
             time.sleep(self.delay_time)
 
-        GPIO.output(self.enable_pin, GPIO.HIGH)
-        time.sleep(2)
-        self.move_right(800)
-        time.sleep(2)
-        self.move_left(400)
-
 
     def move_steps(self, x_dir, y_dir, steps):
         """

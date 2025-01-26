@@ -20,7 +20,7 @@ GPIO.setmode(GPIO.BCM)
 chambers = [
     {
       'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
-      'activated': False,
+      'activated': True,
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 24,
@@ -267,7 +267,7 @@ class Firmware:
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
-    water_level = self.handle_percentage((water_level - 31000) / (33600 - 31000) * 100)
+    water_level = self.handle_percentage((water_level - 24000) / (28000 - 24000) * 100)
 
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level, chamber['ledLightsActivated']):
@@ -319,7 +319,7 @@ def main():
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
-            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+            if int(chamber['parameters']['photoCaptureFrequency']) >= 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
