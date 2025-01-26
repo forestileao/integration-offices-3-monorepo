@@ -51,7 +51,7 @@ chambers = [
       'pumpPin': 18,
       'heaterPin': 19,
       'peltierPin': 17,
-      'chamberLocation': 1200,
+      'chamberLocation': 700,
       'waterLevelChannel': 3,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
