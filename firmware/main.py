@@ -238,12 +238,12 @@ class Firmware:
       soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
-      if soil_moisture < desired_soil_moisture and chamber['irrigationTimer'].elapsed_time() / 60 > 1:
+      if soil_moisture < desired_soil_moisture and chamber['irrigationTimer'].elapsed_time() > 10:
           chamber['irrigationTimer'].reset()
           chamber['irrigationTimer'].start()
           print("Turning on pump for chamber: ", chamber_id)
-          self.pump_controller.set_pump_speed(chamber_id, 50)
-          sleep(1.5)
+          self.pump_controller.set_pump_speed(chamber_id, 35)
+          sleep(0.3)
           print("Turning off pump for chamber: ", chamber_id)
           self.pump_controller.set_pump_speed(chamber_id, 0)
 
