@@ -20,13 +20,13 @@ GPIO.setmode(GPIO.BCM)
 chambers = [
     {
       'id': 'c2edaa38-b3e6-426f-9d0f-6abffe007bf2',
-      'activated': False,
+      'activated': True,
       'whitePin': 21,
       'ledPin': 15,
       'pumpPin': 24,
       'heaterPin': 13,
       'peltierPin': 4,
-      'chamberLocation': 4200,
+      'chamberLocation': 4250,
       'waterLevelChannel': 2,
       'soilMoistureChannel': 0,
       'ledLightsActivated': False,
@@ -51,7 +51,7 @@ chambers = [
       'pumpPin': 18,
       'heaterPin': 19,
       'peltierPin': 17,
-      'chamberLocation': 1200,
+      'chamberLocation': 800,
       'waterLevelChannel': 3,
       'soilMoistureChannel': 1,
       'ledLightsActivated': False,
@@ -238,10 +238,12 @@ class Firmware:
       soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
-      if soil_moisture < desired_soil_moisture:
+      if soil_moisture < desired_soil_moisture and chamber['irrigationTimer'].elapsed_time() > 10:
+          chamber['irrigationTimer'].reset()
+          chamber['irrigationTimer'].start()
           print("Turning on pump for chamber: ", chamber_id)
-          self.pump_controller.set_pump_speed(chamber_id, 50)
-          sleep(1.5)
+          self.pump_controller.set_pump_speed(chamber_id, 35)
+          sleep(0.3)
           print("Turning off pump for chamber: ", chamber_id)
           self.pump_controller.set_pump_speed(chamber_id, 0)
 
@@ -267,7 +269,7 @@ class Firmware:
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
-    water_level = self.handle_percentage((water_level - 31000) / (33600 - 31000) * 100)
+    water_level = self.handle_percentage((water_level - 24000) / (28000 - 24000) * 100)
 
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level, chamber['ledLightsActivated']):
@@ -300,6 +302,8 @@ def main():
                 chamber['photoTimer'].start()
                 chamber['metricTimer']  = Timer()
                 chamber['metricTimer'].start()
+                chamber['irrigationTimer'] = Timer()
+                chamber['irrigationTimer'].start()
 
             chamber_id = chamber['id']
             parameters = firmware.get_parameters(chamber_id)
@@ -319,7 +323,7 @@ def main():
             # Control soil moisture
             firmware.control_soil_moisture(chamber_id, parameters=chamber['parameters'])
 
-            if int(chamber['parameters']['photoCaptureFrequency']) > 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
+            if int(chamber['parameters']['photoCaptureFrequency']) >= 0 and chamber['photoTimer'].elapsed_time() / 60 > int(chamber['parameters']['photoCaptureFrequency']):
                 firmware.move_camera(chamber_id)
                 img_bin = firmware.take_photo(chamber_id)
                 firmware.sendPhoto(chamber_id, img_bin)
