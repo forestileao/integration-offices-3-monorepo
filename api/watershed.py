@@ -75,7 +75,7 @@ def apply_watershed(img_binary):
 
   non_zero_pixels = cv2.countNonZero(bin_img)
   print(f"Number of non-zero pixels: {non_zero_pixels}")
-  green_area = non_zero_pixels * 5/4175
+  green_area = non_zero_pixels * 5/1175
   print(f"Green Area: {green_area} cm²")
 
   # sure background area
