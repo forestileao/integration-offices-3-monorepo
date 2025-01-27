@@ -28,9 +28,9 @@ class HttpApi:
           'lightState': lightState,
           "chamberId": chamber_id,
           "estimateDate": datetime.now().isoformat(),  # Format the datetime to ISO string
-          "soilMoisture": soil_moisture or 50,  # Replace with actual soil moisture sensor value
+          "soilMoisture": soil_moisture,  # Replace with actual soil moisture sensor value
           "temperature": temperature or 25,  # Replace with actual temperature sensor value
-          "humidity": humidity or 50,  # Replace with actual humidity sensor value
+          "humidity": humidity,  # Replace with actual humidity sensor value
           "waterLevel": water_level  # Replace with actual water level sensor value
       }
 
