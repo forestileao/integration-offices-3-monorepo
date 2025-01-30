@@ -269,7 +269,11 @@ class Firmware:
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
     soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
-    water_level = self.handle_percentage((water_level - 29000) / (30000 - 29000) * 100)
+    
+    if water_level < 26500:
+        water_level = 10
+    else:
+        water_level = 50
 
 
     if self.api.send_metrics(chamber_id, soil_moisture, temperature, humidity, water_level, chamber['ledLightsActivated']):
