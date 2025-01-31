@@ -101,9 +101,19 @@ export default function PlantMonitoringDashboard() {
       ?.filter((estimate: Estimate) => estimate.chamberId === selectedChamber)
       .sort((a, b) => {
         return (
+          // remove 3 houts from the time to match the time zone
           new Date(a.estimateDate).getTime() -
           new Date(b.estimateDate).getTime()
         );
+      })
+      .map((x) => {
+        let date = new Date(x.estimateDate);
+        let hours = date.getHours();
+        date.setHours(hours - 3);
+        return {
+          ...x,
+          estimateDate: date.toLocaleString(),
+        };
       }) || [];
 
   const photoEstimates =
@@ -113,6 +123,15 @@ export default function PlantMonitoringDashboard() {
         return (
           new Date(a.captureDate).getTime() - new Date(b.captureDate).getTime()
         );
+      })
+      .map((x) => {
+        let date = new Date(x.captureDate);
+        let hours = date.getHours();
+        date.setHours(hours - 3);
+        return {
+          ...x,
+          captureDate: date.toLocaleString(),
+        };
       }) || [];
 
   const mainEstimate = estimates.at(-1);
@@ -123,7 +142,7 @@ export default function PlantMonitoringDashboard() {
     ...(photoEstimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : photoEstimates.map((photo: Photo) => [
-          new Date(photo.captureDate).toLocaleString(),
+          photo.captureDate,
           photo.greenArea,
         ])),
   ];
@@ -133,7 +152,7 @@ export default function PlantMonitoringDashboard() {
     ...(photoEstimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : photoEstimates.map((photo: Photo) => [
-          new Date(photo.captureDate).toLocaleString(),
+          photo.captureDate,
           photo.leafCount,
         ])),
   ];
@@ -143,7 +162,7 @@ export default function PlantMonitoringDashboard() {
     ...(estimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.estimateDate,
           estimate.temperature,
         ])),
   ];
@@ -153,7 +172,7 @@ export default function PlantMonitoringDashboard() {
     ...(estimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.estimateDate,
           estimate.humidity,
         ])),
   ];
@@ -163,7 +182,7 @@ export default function PlantMonitoringDashboard() {
     ...(estimates.length == 0
       ? [[new Date().toLocaleString(), 0]]
       : estimates.map((estimate: Estimate) => [
-          new Date(estimate.estimateDate).toLocaleString(),
+          estimate.estimateDate,
           estimate.soilMoisture,
         ])),
   ];
