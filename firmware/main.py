@@ -270,7 +270,7 @@ class Firmware:
 
     soil_moisture = self.handle_percentage(100 - (soil_moisture - 12000) / (32000 - 12000) * 100)
     
-    if water_level < 26500:
+    if water_level < 20000:
         water_level = 10
     else:
         water_level = 50
