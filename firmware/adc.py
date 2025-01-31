@@ -53,20 +53,20 @@ if __name__ == "__main__":
 
     while True:
         print ('\n\nChamber 2:')
-        soil_perc = handle_percentage(100 - (adc.read_value(1) - 15100) / (17900 - 15100) * 100)
+        soil_perc = handle_percentage(100 - (adc.read_value(1) - 12000) / (32000 - 12000) * 100)
 
         print(f'soil_perc: {soil_perc}')
-        print(f'water level: {handle_percentage((adc.read_value(3) - 24000) / (28000 - 24000) * 100)}')
+        print(f'soil_value: {adc.read_value(1)}')
         print(f'water level value: {adc.read_value(3)}')
         time.sleep(1)
         
 
         print ('\n\nChamber 1:')
-        soil_perc = handle_percentage(100 - (adc.read_value(0) - 15100) / (17900 - 15100) * 100)
+        soil_perc = handle_percentage(100 - (adc.read_value(0) - 12000) / (32000 - 12000) * 100)
 
         print(f'soil_perc: {soil_perc}')
+        print(f'soil_value: {adc.read_value(0)}')
 
-        print(f'water level: {handle_percentage((adc.read_value(2) - 29000) / (32000 - 29000) * 100)}')
         print(f'water level value: {adc.read_value(2)}')
 # soil moisture
 # min: 31198 # seco

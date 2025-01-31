@@ -2,12 +2,10 @@ import cv2
 import time  # Import the time module for introducing a delay
 
 def capture_picture(cap):
-    # Introduce a small delay to let the camera initialize
-    time.sleep(2)  # Adjust the delay as needed
-    
     i = 0
     while i != 10:
         _, frame = cap.read()  # Capture frames from the webcam
+        time.sleep(0.1)
         if not _:
             return None  # Return None if frame capture failed
         i += 1

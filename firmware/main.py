@@ -235,7 +235,7 @@ class Firmware:
       channel = chamber['soilMoistureChannel']
       self.multi.select_channel(2)
       soil_moisture = self.adc.read_value(channel)
-      soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
+      soil_moisture = self.handle_percentage(100 - (soil_moisture - 12000) / (32000 - 12000) * 100)
       desired_soil_moisture = int(parameters['soilMoistureLowerLimit'])
 
       if soil_moisture < desired_soil_moisture and chamber['irrigationTimer'].elapsed_time() > 10:
@@ -268,7 +268,7 @@ class Firmware:
     soil_moisture = self.adc.read_value(chamber['soilMoistureChannel'])
     water_level = self.adc.read_value(chamber['waterLevelChannel'])
 
-    soil_moisture = self.handle_percentage(100 - (soil_moisture - 15100) / (17900 - 15100) * 100)
+    soil_moisture = self.handle_percentage(100 - (soil_moisture - 12000) / (32000 - 12000) * 100)
     
     if water_level < 26500:
         water_level = 10
@@ -334,7 +334,7 @@ def main():
                 chamber['photoTimer'].reset()
                 chamber['photoTimer'].start()
 
-            if chamber['metricTimer'].elapsed_time() / 60 > 1:
+            if chamber['metricTimer'].elapsed_time() > 20:
                 firmware.send_metrics(chamber_id)
                 chamber['metricTimer'].reset()
                 chamber['metricTimer'].start()
