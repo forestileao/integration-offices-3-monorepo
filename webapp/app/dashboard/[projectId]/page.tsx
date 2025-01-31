@@ -107,8 +107,8 @@ export default function PlantMonitoringDashboard() {
         );
       })
       .map((x) => {
-        let date = new Date(x.estimateDate);
-        let hours = date.getHours();
+        const date = new Date(x.estimateDate);
+        const hours = date.getHours();
         date.setHours(hours - 3);
         return {
           ...x,
@@ -125,8 +125,8 @@ export default function PlantMonitoringDashboard() {
         );
       })
       .map((x) => {
-        let date = new Date(x.captureDate);
-        let hours = date.getHours();
+        const date = new Date(x.captureDate);
+        const hours = date.getHours();
         date.setHours(hours - 3);
         return {
           ...x,
