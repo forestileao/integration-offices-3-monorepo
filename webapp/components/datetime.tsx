@@ -15,11 +15,11 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export type DateTimePickerProps = {
-  value?: Date;
+  date?: Date;
   onChange?: (date: Date) => void;
 };
 
-export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
+export function DateTimePicker({ date, onChange }: DateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -33,8 +33,8 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
     type: "hour" | "minute" | "ampm",
     value: string
   ) => {
-    if (value) {
-      const newDate = new Date(value);
+    if (date) {
+      const newDate = new Date(date);
       if (type === "hour") {
         newDate.setHours(
           (parseInt(value) % 12) + (newDate.getHours() >= 12 ? 12 : 0)
@@ -58,12 +58,12 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
           variant="outline"
           className={cn(
             "w-full justify-start text-left font-normal",
-            !value && "text-muted-foreground"
+            !date && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? (
-            format(value, "MM/dd/yyyy hh:mm aa")
+          {date ? (
+            format(date, "MM/dd/yyyy hh:mm aa")
           ) : (
             <span>MM/DD/YYYY hh:mm aa</span>
           )}
@@ -73,7 +73,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
         <div className="sm:flex">
           <Calendar
             mode="single"
-            selected={value}
+            selected={date}
             onSelect={handleDateSelect}
             initialFocus
           />
@@ -85,7 +85,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
                     key={hour}
                     size="icon"
                     variant={
-                      value && value.getHours() % 12 === hour % 12
+                      date && date.getHours() % 12 === hour % 12
                         ? "default"
                         : "ghost"
                     }
@@ -105,9 +105,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
                     key={minute}
                     size="icon"
                     variant={
-                      value && value.getMinutes() === minute
-                        ? "default"
-                        : "ghost"
+                      date && date.getMinutes() === minute ? "default" : "ghost"
                     }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() =>
@@ -127,9 +125,9 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
                     key={ampm}
                     size="icon"
                     variant={
-                      value &&
-                      ((ampm === "AM" && value.getHours() < 12) ||
-                        (ampm === "PM" && value.getHours() >= 12))
+                      date &&
+                      ((ampm === "AM" && date.getHours() < 12) ||
+                        (ampm === "PM" && date.getHours() >= 12))
                         ? "default"
                         : "ghost"
                     }

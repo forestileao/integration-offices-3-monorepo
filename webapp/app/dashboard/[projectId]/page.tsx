@@ -510,7 +510,7 @@ export default function PlantMonitoringDashboard() {
                   <div>
                     <Label htmlFor="start-date">Start Date</Label>
                     <DateTimePicker
-                      value={timeFilter.startDate || undefined}
+                      date={timeFilter.startDate || undefined}
                       onChange={(date) => {
                         setTimeFilter({ ...timeFilter, startDate: date });
                       }}
@@ -519,7 +519,7 @@ export default function PlantMonitoringDashboard() {
                   <div>
                     <Label htmlFor="end-date">End Date</Label>
                     <DateTimePicker
-                      value={timeFilter.endDate || undefined}
+                      date={timeFilter.endDate || undefined}
                       onChange={(date) => {
                         setTimeFilter({ ...timeFilter, endDate: date });
                       }}
