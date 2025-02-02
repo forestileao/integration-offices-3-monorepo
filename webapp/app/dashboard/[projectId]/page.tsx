@@ -38,6 +38,7 @@ import {
   getProject,
 } from "@/api";
 import { Chart } from "react-google-charts";
+import { DateTimePicker } from "@/components/datetime";
 
 interface Chamber {
   id: string;
@@ -83,12 +84,26 @@ interface Photo {
   greenArea: number;
 }
 
+type DateTimeRange = {
+  startDate: Date | null;
+  endDate: Date | null;
+};
+
 export default function PlantMonitoringDashboard() {
   const router = useRouter();
   const [selectedChamber, setSelectedChamber] = useState("1");
   const [project, setProject] = useState<Project>({} as Project);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const { projectId } = useParams();
+  const [timeFilter, setTimeFilter] = useState<DateTimeRange>(() => {
+    const startDate = new Date();
+    startDate.setHours(startDate.getHours() - 24 * 7);
+
+    return {
+      startDate: startDate,
+      endDate: null,
+    };
+  });
 
   const [parameters, setParameters] = useState<Parameter>({} as Parameter);
 
@@ -98,7 +113,21 @@ export default function PlantMonitoringDashboard() {
 
   const estimates =
     project.estimates
-      ?.filter((estimate: Estimate) => estimate.chamberId === selectedChamber)
+      ?.filter((estimate: Estimate) => {
+        let result = estimate.chamberId === selectedChamber;
+
+        if (timeFilter.startDate) {
+          result =
+            result && new Date(estimate.estimateDate) >= timeFilter.startDate;
+        }
+
+        if (timeFilter.endDate) {
+          result =
+            result && new Date(estimate.estimateDate) <= timeFilter.endDate;
+        }
+
+        return result;
+      })
       .sort((a, b) => {
         return (
           // remove 3 houts from the time to match the time zone
@@ -118,7 +147,20 @@ export default function PlantMonitoringDashboard() {
 
   const photoEstimates =
     project.photos
-      ?.filter((photo: Photo) => photo.chamberId === selectedChamber)
+      ?.filter((photo: Photo) => {
+        let result = photo.chamberId === selectedChamber;
+
+        if (timeFilter.startDate) {
+          result =
+            result && new Date(photo.captureDate) >= timeFilter.startDate;
+        }
+
+        if (timeFilter.endDate) {
+          result = result && new Date(photo.captureDate) <= timeFilter.endDate;
+        }
+
+        return result;
+      })
       .sort((a, b) => {
         return (
           new Date(a.captureDate).getTime() - new Date(b.captureDate).getTime()
@@ -463,6 +505,28 @@ export default function PlantMonitoringDashboard() {
                 <CardHeader>
                   <CardTitle>Growth Metrics Over Time</CardTitle>
                 </CardHeader>
+
+                <div className="flex flex-wrap flex-row space-x-4 m-5 ">
+                  <div>
+                    <Label htmlFor="start-date">Start Date</Label>
+                    <DateTimePicker
+                      value={timeFilter.startDate || undefined}
+                      onChange={(date) => {
+                        setTimeFilter({ ...timeFilter, startDate: date });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="end-date">End Date</Label>
+                    <DateTimePicker
+                      value={timeFilter.endDate || undefined}
+                      onChange={(date) => {
+                        setTimeFilter({ ...timeFilter, endDate: date });
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <CardContent>
                   <Chart
                     chartType="LineChart"
