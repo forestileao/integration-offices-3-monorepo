@@ -97,7 +97,7 @@ export default function PlantMonitoringDashboard() {
   const { projectId } = useParams();
   const [timeFilter, setTimeFilter] = useState<DateTimeRange>(() => {
     const startDate = new Date();
-    startDate.setHours(startDate.getHours() - 24 * 7);
+    startDate.setHours(startDate.getHours() - 24 * 7 * 8);
 
     return {
       startDate: startDate,

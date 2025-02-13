@@ -13,7 +13,7 @@ export const loginUser = async (username: string, password: string) => {
   try {
     // Make the POST request to the FastAPI /token endpoint
     const response = await axios.post(`${API_URL}/token`, {
-      username,
+      username: username?.toLowerCase(),
       password,
     });
 
