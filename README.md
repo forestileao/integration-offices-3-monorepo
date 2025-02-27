@@ -1,5 +1,19 @@
 # Plant Monitoring System
 
+This document can be better visualized in the GitHub repository: https://github.com/forestileao/integration-offices-3-monorepo/blob/main/README.md
+
+In the source code of the project, it is possible to find the following folders:
+- api: Contains the backend of the project, built with FastAPI.
+- webapp: Contains the frontend of the project, built with Next.js.
+- eletronic-design: Contains the eletronic design of the project, built with Kicad.
+- firmware: Contains the firmware of the project, built for Raspberry pi 3.
+- leaf-detection: python notebooks with the leaf detection algorithm.
+- mecanic-design: AutoCAD files with the mecanic design of the project.
+- arduino-codes: Testing codes for the Arduino (Used for testing the components)
+
+Source Code link: https://github.com/forestileao/integration-offices-3-monorepo
+
+
 This project is a Plant Monitoring System built with FastAPI for the backend and Next.js for the frontend.
 
 ## Table of Contents
@@ -108,6 +122,7 @@ This project is a Plant Monitoring System built with FastAPI for the backend and
 - `GET /projects/`: List all projects.
 - `POST /token`: Obtain a JWT token.
 - `POST /users/`: Create a new user.
+... and more
 
 ## Learn More
 
